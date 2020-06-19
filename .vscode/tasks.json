@@ -1,0 +1,36 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "C/C++: g++ build project files",
+      "command": "/bin/g++",
+      "args": [
+        "-g",
+        "${workspaceFolder}/*.cc",
+        "-o",
+        "${workspaceFolder}/bin/snap2text",
+        "`pkg-config",
+        "--libs",
+        "--cflags",
+        "lept",
+        "tesseract",
+        "gtkmm-3.0",
+        "gtk+-3.0`"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": ["$gcc"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "TSK - Print workspaceFolder",
+      "type": "shell",
+      "command": "echo ${fileDirname}/${fileBasenameNoExtension}"
+    }
+  ]
+}
