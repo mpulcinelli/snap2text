@@ -1,0 +1,9 @@
+window {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+#btn_action_capturar {
+  color: #c71eff;
+  -gtkwidget-focus-padding: 1;
+  -gtkwidget-focus-line-width: 0;
+}
