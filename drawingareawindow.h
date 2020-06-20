@@ -13,12 +13,18 @@ class DrawingAreaWindow : public Gtk::DrawingArea
 public:
     DrawingAreaWindow();
     virtual ~DrawingAreaWindow();
+    typedef sigc::signal<void, char *> type_signal_on_scan_finish;
+    type_signal_on_scan_finish signal_on_scan_finish();
 
 protected:
     virtual bool on_draw(const Cairo::RefPtr<Cairo::Context> &cr) override;
     virtual bool on_motion_notify_event(GdkEventMotion *motion_event) override;
     virtual bool on_focus(Gtk::DirectionType direction) override;
     bool on_button_press_event(GdkEventButton *event) override;
+
+    type_signal_on_scan_finish m_signal_on_scan_finish;
+
+    void get_screen_pixels();
 
 private:
     //display Pixbuf

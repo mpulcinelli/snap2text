@@ -16,13 +16,13 @@ Gtk::Window *menu_window = nullptr;
 Gtk::ComboBoxText *cbo_lista_monitores;
 
 int num_monitors = 0;
-DrawingAreaWindow *d;
 
-static void on_my_set_focus(Gtk::Widget *focus)
+static void on_scan_finished(char *texto)
 {
-    if (d)
+    char *text_to_show = texto;
+    if (main_window)
     {
-        auto result = text_result_from_scan;
+        main_window->hide();
     }
 }
 
@@ -41,20 +41,28 @@ static void on_button_capture_clicked()
 
     if (builder)
     {
+        if (!main_window)
+        {
+            builder->get_widget("main_window", main_window);
+        }
 
-        builder->get_widget("main_window", main_window);
         if (main_window)
         {
-            if (!d)
-                d = new DrawingAreaWindow();
+            main_window->remove();
+            main_window->set_modal(true);
+
+            DrawingAreaWindow *d = new DrawingAreaWindow();
 
             main_window->add(*d);
+            d->signal_on_scan_finish().connect(sigc::ptr_fun(&on_scan_finished));
             d->show_all();
 
             Glib::RefPtr<Gdk::Screen> screen = menu_window->get_screen();
+
             main_window->fullscreen_on_monitor(screen, indx);
 
             //main_window->set_modal(true);
+
             main_window->show_all();
             //menu_window->set_transient_for(*main_window);
         }
@@ -84,8 +92,6 @@ int main(int argc, char *argv[])
         builder->get_widget("menu_window", menu_window);
         if (menu_window)
         {
-            menu_window->signal_set_focus().connect(sigc::ptr_fun(&on_my_set_focus));
-
             Gtk::Button *btn_action_capturar;
             builder->get_widget("btn_action_capturar", btn_action_capturar);
             if (btn_action_capturar)

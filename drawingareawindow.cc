@@ -12,6 +12,7 @@ DrawingAreaWindow::DrawingAreaWindow()
 
     firstclick = false;
     secondclick = false;
+    get_screen_pixels();
 }
 
 bool DrawingAreaWindow::on_button_press_event(GdkEventButton *event)
@@ -40,19 +41,19 @@ bool DrawingAreaWindow::on_button_press_event(GdkEventButton *event)
     return false;
 }
 
+void DrawingAreaWindow::get_screen_pixels()
+{
+    auto display = Gtk::Widget::get_display();
+    auto screen = display->get_default_screen();
+    Glib::RefPtr<Gdk::Window> root_window = screen->get_root_window();
+    screen->get_monitor_geometry(1, rect);
+    pixels = Gdk::Pixbuf::create(root_window, rect.get_x(), rect.get_y(), rect.get_width(), rect.get_height());
+}
 bool DrawingAreaWindow::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
 {
 
     if (!firstclick)
     {
-        auto display = Gtk::Widget::get_display();
-        auto screen = display->get_default_screen();
-        Glib::RefPtr<Gdk::Window> root_window = screen->get_root_window();
-
-        screen->get_monitor_geometry(1, rect);
-        sleep(3);
-        pixels = Gdk::Pixbuf::create(root_window, rect.get_x(), rect.get_y(), rect.get_width(), rect.get_height());
-
         Gdk::Cairo::set_source_pixbuf(cr, pixels);
         cr->rectangle(rect.get_x(), rect.get_y(), rect.get_width(), rect.get_height());
         cr->fill();
@@ -103,12 +104,6 @@ void DrawingAreaWindow::take_screen_shot()
 {
     auto curr_window = Gtk::Widget::get_window();
 
-    int w_width = 0;
-    int w_height = 0;
-
-    w_width = curr_window->get_width();
-    w_height = curr_window->get_height();
-
     auto display = Gtk::Widget::get_display();
     auto screen = display->get_default_screen();
 
@@ -151,13 +146,19 @@ void DrawingAreaWindow::get_text_from_screen_shot()
     Pix *image = pixRead("./file.png");
 
     ocr->SetImage(image);
+
     /////////////////////////////////////////////////////////////////////
 
     text_result_from_scan = ocr->GetUTF8Text();
 
     ocr->End();
 
-    this->get_parent_window()->hide();
+    m_signal_on_scan_finish.emit(text_result_from_scan);
+}
+
+DrawingAreaWindow::type_signal_on_scan_finish DrawingAreaWindow::signal_on_scan_finish()
+{
+    return m_signal_on_scan_finish;
 }
 
 DrawingAreaWindow::~DrawingAreaWindow() {}
