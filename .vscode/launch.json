@@ -22,7 +22,7 @@
           "ignoreFailures": true
         }
       ],
-      "preLaunchTask": "C/C++: g++ build project files",
+      "preLaunchTask": "TSK - Copy Static and Build Project",
       "miDebuggerPath": "/usr/bin/gdb"
     }
   ]

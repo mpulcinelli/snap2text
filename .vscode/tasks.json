@@ -3,7 +3,7 @@
   "tasks": [
     {
       "type": "shell",
-      "label": "C/C++: g++ build project files",
+      "label": "TSK - C/C++: g++ build project files",
       "command": "/bin/g++",
       "args": [
         "-g",
@@ -21,16 +21,23 @@
       "options": {
         "cwd": "${workspaceFolder}"
       },
-      "problemMatcher": ["$gcc"],
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "TSK - Copy static folder to bin",
+      "type": "shell",
+      "command": "cp -R ${workspaceFolder}/static/ ${workspaceFolder}/bin/"
+    },
+    {
+      "label": "TSK - Copy Static and Build Project",
+      "dependsOn": [
+        "TSK - Copy static folder to bin",
+        "TSK - C/C++: g++ build project files"
+      ],
       "group": {
         "kind": "build",
         "isDefault": true
       }
-    },
-    {
-      "label": "TSK - Print workspaceFolder",
-      "type": "shell",
-      "command": "echo ${fileDirname}/${fileBasenameNoExtension}"
     }
   ]
 }
