@@ -1,0 +1,1 @@
+extern char *text_result_from_scan;
