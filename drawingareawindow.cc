@@ -139,11 +139,19 @@ void DrawingAreaWindow::get_text_from_screen_shot()
 
     ocr->SetPageSegMode(tesseract::PSM_AUTO);
 
+    /////////////////////////////////////////////////////////////////////
+    /* GAMBIARRA - O ideal seria pegar o objeto pixels (Glib::RefPtr<Gdk::Pixbuf>) e converter para Pix*
+        - SetImage(Pix* pix); ou
+        - void SetImage(const unsigned char* imagedata, int width, int height,
+                int bytes_per_pixel, int bytes_per_line);        
+    */
+
     pixels->save("./file.png", "png");
 
     Pix *image = pixRead("./file.png");
 
     ocr->SetImage(image);
+    /////////////////////////////////////////////////////////////////////
 
     text_result_from_scan = ocr->GetUTF8Text();
 
