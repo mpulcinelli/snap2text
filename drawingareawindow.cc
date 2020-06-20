@@ -41,6 +41,9 @@ bool DrawingAreaWindow::on_button_press_event(GdkEventButton *event)
     return false;
 }
 
+/** 
+ * Método para copiar os pixels do monitor.
+*/
 void DrawingAreaWindow::get_screen_pixels()
 {
     auto display = Gtk::Widget::get_display();
@@ -49,6 +52,10 @@ void DrawingAreaWindow::get_screen_pixels()
     screen->get_monitor_geometry(1, rect);
     pixels = Gdk::Pixbuf::create(root_window, rect.get_x(), rect.get_y(), rect.get_width(), rect.get_height());
 }
+
+/** 
+ * Evento para renderizar os pixels na tela
+*/
 bool DrawingAreaWindow::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
 {
 

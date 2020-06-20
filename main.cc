@@ -15,8 +15,6 @@ Gtk::Window *main_window = nullptr;
 Gtk::Window *menu_window = nullptr;
 Gtk::ComboBoxText *cbo_lista_monitores;
 
-int num_monitors = 0;
-
 static void on_scan_finished(char *texto)
 {
     char *text_to_show = texto;
@@ -60,11 +58,7 @@ static void on_button_capture_clicked()
             Glib::RefPtr<Gdk::Screen> screen = menu_window->get_screen();
 
             main_window->fullscreen_on_monitor(screen, indx);
-
-            //main_window->set_modal(true);
-
             main_window->show_all();
-            //menu_window->set_transient_for(*main_window);
         }
     }
 }
@@ -81,7 +75,7 @@ static void read_style()
 
 int main(int argc, char *argv[])
 {
-    auto app = Gtk::Application::create(argc, argv, "br.com.marciopulcinelli.snap2text");
+    static Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv, "br.com.marciopulcinelli.snap2text");
 
     read_style();
 
@@ -100,8 +94,8 @@ int main(int argc, char *argv[])
                 btn_action_capturar->signal_clicked().connect(sigc::ptr_fun(&on_button_capture_clicked));
             }
 
-            auto display = menu_window->get_display();
-            num_monitors = display->get_n_monitors();
+            Glib::RefPtr<Gdk::Display> display = menu_window->get_display();
+            const int num_monitors = display->get_n_monitors();
 
             builder->get_widget("cbo_monitors", cbo_lista_monitores);
             if (cbo_lista_monitores)
