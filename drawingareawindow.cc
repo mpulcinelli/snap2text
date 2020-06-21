@@ -120,12 +120,9 @@ void DrawingAreaWindow::take_screen_shot()
 
     Glib::RefPtr<Gdk::Window> root_window = screen->get_root_window();
 
-    sleep(3);
-
     auto internal_pixels = Gdk::Pixbuf::create(root_window, x1, y1, m_width, m_heigth);
     pixels = internal_pixels;
 
-    //pixels->save("./file.png", "png");
     get_text_from_screen_shot();
 }
 
