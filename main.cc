@@ -1,6 +1,8 @@
 #include "areacapturewindow.h"
+#include "curlreader.h"
 #include "drawingareawindow.h"
 #include "globals.h"
+#include <curl/curl.h>
 #include <gtk/gtk.h>
 #include <gtk/gtkstyleprovider.h>
 #include <gtkmm.h>
@@ -17,10 +19,28 @@ Gtk::ComboBoxText *cbo_lista_monitores;
 
 static void on_scan_finished(char *texto)
 {
-    char *text_to_show = texto;
+
+    std::string texto_original = trim_copy(std::string(texto));
+
     if (main_window)
     {
         main_window->hide();
+        //
+        Gtk::Box *box_results;
+
+        builder->get_widget("box_results", box_results);
+        if (box_results)
+        {
+            box_results->set_visible(true);
+
+            Gtk::TextView *txt_text_original;
+
+            builder->get_widget("txt_text_original", txt_text_original);
+            if (txt_text_original)
+            {
+                txt_text_original->get_buffer()->set_text(texto_original);
+            }
+        }
     }
 }
 
@@ -78,6 +98,14 @@ int main(int argc, char *argv[])
     static Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv, "br.com.marciopulcinelli.snap2text");
 
     read_style();
+
+    CurlReader read;
+
+    auto x = read.read_url("https://api.github.com/repos/whoshuu/cpr/contributors?anon=true&key=value");
+
+    printf("%s", x.c_str());
+
+    /***************************************************************************************/
 
     builder = Gtk::Builder::create_from_file("./static/ui-window.glade");
 
