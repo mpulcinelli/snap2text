@@ -17,6 +17,7 @@
         "tesseract",
         "gtkmm-3.0",
         "curlpp",
+        "jsoncpp",
         "gtk+-3.0`",
         "`curl-config",
         "--libs",
@@ -33,9 +34,15 @@
       "command": "cp -R ${workspaceFolder}/static/ ${workspaceFolder}/bin/"
     },
     {
+      "label": "TSK - Copy Google Credential to bin folder",
+      "type": "shell",
+      "command": "cp -R ${workspaceFolder}/url_google_cred.out ${workspaceFolder}/bin/"
+    },
+    {
       "label": "TSK - Copy Static and Build Project",
       "dependsOn": [
         "TSK - Copy static folder to bin",
+        "TSK - Copy Google Credential to bin folder",
         "TSK - C/C++: g++ build project files"
       ],
       "group": {
