@@ -79,7 +79,7 @@ sudo apt-get install curl
 ### curlpp
 
 ```
-sudo apt-get install curl
+sudo apt-get install libcurlpp-dev
 ```
 
 ### jsoncpp
