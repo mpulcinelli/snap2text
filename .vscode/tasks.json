@@ -16,7 +16,11 @@
         "lept",
         "tesseract",
         "gtkmm-3.0",
-        "gtk+-3.0`"
+        "curlpp",
+        "gtk+-3.0`",
+        "`curl-config",
+        "--libs",
+        "--cflags`"
       ],
       "options": {
         "cwd": "${workspaceFolder}"

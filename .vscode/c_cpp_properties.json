@@ -12,6 +12,8 @@
         "/usr/include/gtk-3.0/gdk/**",
         "/usr/include/tesseract/**",
         "/usr/include/leptonica/**",
+        "/usr/include/x86_64-linux-gnu/curl/*",
+        "/usr/include/curlpp/**",
         "/usr/lib/**"
       ],
       "defines": [],
