@@ -9,8 +9,7 @@ public:
     CurlReader(/* args */);
     ~CurlReader();
 
-    std::string read_url(std::string url);
+    std::string read_url(std::string url, char *data);
 
 private:
-    size_t write_function(void *ptr, size_t size, size_t nmemb, std::string *data);
 };

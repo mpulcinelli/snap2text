@@ -100,8 +100,10 @@ int main(int argc, char *argv[])
     read_style();
 
     CurlReader read;
+    char *content_to_send;
+    //https://www.googleapis.com/language/translate/v2?key=YOUR-API-KEY&source=en&target=de&q=words+to+translate
 
-    auto x = read.read_url("https://api.github.com/repos/whoshuu/cpr/contributors?anon=true&key=value");
+    auto x = read.read_url("https://api.github.com/repos/whoshuu/cpr/contributors?anon=true&key=value", content_to_send);
 
     printf("%s", x.c_str());
 

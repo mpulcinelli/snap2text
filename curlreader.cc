@@ -15,21 +15,41 @@ CurlReader::~CurlReader()
 {
 }
 
-std::string CurlReader::read_url(std::string url)
+std::string CurlReader::read_url(std::string url, char *data)
 {
-    curlpp::options::Url myUrl(url);
-    curlpp::options::UserAgent ue("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36");
-    curlpp::Easy myRequest;
 
-    myRequest.setOpt(ue);
-    myRequest.setOpt(myUrl);
+    std::istringstream myStream(data);
+    int size = myStream.str().size();
+    char buf[50];
+    std::list<std::string> headers;
+    headers.push_back("Content-Type: application/json");
+
+    sprintf(buf, "Content-Length: %d", size);
+    headers.push_back(buf);
+
+    curlpp::Cleanup cleaner;
+    curlpp::Easy request;
+
+    using namespace curlpp::Options;
+
+    request.setOpt(new Verbose(true));
+    request.setOpt(new UserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36"));
+    request.setOpt(new ReadStream(&myStream));
+    request.setOpt(new InfileSize(size));
+    request.setOpt(new Upload(true));
+    request.setOpt(new HttpHeader(headers));
+
+    request.setOpt(new Url(url));
+
+    request.perform();
 
     std::ostringstream os;
     curlpp::options::WriteStream ws(&os);
-    myRequest.setOpt(ws);
-    myRequest.perform();
 
-    os << myRequest;
+    request.setOpt(ws);
+    request.perform();
+
+    os << request;
     std::string s = os.str();
     return s;
 }
