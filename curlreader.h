@@ -1,4 +1,5 @@
 #include <curl/curl.h>
+#include <json/json.h>
 #include <string>
 
 class CurlReader
@@ -9,7 +10,8 @@ public:
     CurlReader(/* args */);
     ~CurlReader();
 
-    std::string read_url(std::string url, char *data);
+    Json::Value read_url(std::string url, std::string);
+    void read_available_languages();
 
 private:
 };

@@ -1,13 +1,16 @@
 #include "curlreader.h"
-#include <iostream>
-#include <sstream>
-#include <string>
-
+#include <cstdint>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
 #include <curlpp/cURLpp.hpp>
+#include <iostream>
+#include <json/json.h>
+#include <list>
+#include <memory>
+#include <sstream>
+#include <string>
 
-CurlReader::CurlReader(/* args */)
+CurlReader::CurlReader()
 {
 }
 
@@ -15,41 +18,49 @@ CurlReader::~CurlReader()
 {
 }
 
-std::string CurlReader::read_url(std::string url, char *data)
+inline size_t WriteCallback(const char *in,
+                            std::size_t size,
+                            std::size_t num,
+                            std::string *out)
 {
+    const std::size_t totalBytes(size * num);
+    out->append(in, totalBytes);
+    return totalBytes;
+}
 
-    std::istringstream myStream(data);
-    int size = myStream.str().size();
-    char buf[50];
-    std::list<std::string> headers;
-    headers.push_back("Content-Type: application/json");
+Json::Value CurlReader::read_url(std::string url_path, std::string jsondata)
+{
+    std::list<std::string> header;
 
-    sprintf(buf, "Content-Length: %d", size);
-    headers.push_back(buf);
+    Json::Value obj_json;
+    Json::Reader json_reader;
 
-    curlpp::Cleanup cleaner;
-    curlpp::Easy request;
+    if (!json_reader.parse(jsondata, obj_json))
+        return nullptr;
 
-    using namespace curlpp::Options;
+    header.push_back("Content-Type: application/json");
+    curlpp::Cleanup clean;
+    curlpp::Easy r;
 
-    request.setOpt(new Verbose(true));
-    request.setOpt(new UserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36"));
-    request.setOpt(new ReadStream(&myStream));
-    request.setOpt(new InfileSize(size));
-    request.setOpt(new Upload(true));
-    request.setOpt(new HttpHeader(headers));
+    r.setOpt(new curlpp::options::Url(url_path));
+    r.setOpt(new curlpp::options::HttpHeader(header));
+    r.setOpt(new curlpp::options::PostFields(obj_json.toStyledString()));
+    r.setOpt(new curlpp::options::PostFieldSize(obj_json.toStyledString().length()));
 
-    request.setOpt(new Url(url));
+    std::ostringstream response;
+    r.setOpt(new curlpp::options::WriteStream(&response));
 
-    request.perform();
+    r.perform();
+    std::string result = std::string(response.str());
 
-    std::ostringstream os;
-    curlpp::options::WriteStream ws(&os);
+    Json::Value obj_json_result;
 
-    request.setOpt(ws);
-    request.perform();
+    json_reader.parse(result, obj_json_result);
 
-    os << request;
-    std::string s = os.str();
-    return s;
+    return obj_json_result;
+}
+
+void CurlReader::read_available_languages()
+{
+    //https: //www.googleapis.com/language/translate/v2/languages
 }
