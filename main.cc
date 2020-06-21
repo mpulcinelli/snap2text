@@ -3,14 +3,19 @@
 #include "drawingareawindow.h"
 #include "globals.h"
 #include <curl/curl.h>
+#include <fstream>
 #include <gtk/gtk.h>
 #include <gtk/gtkstyleprovider.h>
 #include <gtkmm.h>
 #include <gtkmm/enums.h>
+#include <iostream>
+#include <json/json.h>
 #include <sstream>
 #include <string.h>
+#include <string>
 
 using namespace std;
+std::string read_google_url_with_credentials();
 
 Glib::RefPtr<Gtk::Builder> builder;
 Gtk::Window *main_window = nullptr;
@@ -41,6 +46,46 @@ static void on_scan_finished(char *texto)
                 txt_text_original->get_buffer()->set_text(texto_original);
             }
         }
+    }
+}
+
+static void on_button_traduzir_clicked()
+{
+    Glib::ustring txt_origem;
+    Glib::ustring txt_traduzido;
+
+    Gtk::TextView *txt_text_original;
+    builder->get_widget("txt_text_original", txt_text_original);
+    if (txt_text_original)
+    {
+        txt_origem = txt_text_original->get_buffer()->get_text();
+    }
+
+    Gtk::TextView *txt_text_translated;
+    builder->get_widget("txt_text_translated", txt_text_translated);
+
+    CurlReader read;
+
+    Json::Value root;
+
+    root["q"] = txt_origem.c_str();
+    root["target"] = "pt";
+    root["source"] = "en";
+
+    Json::StreamWriterBuilder jsonbuilder;
+    const std::string json_file = Json::writeString(jsonbuilder, root);
+    std::cout << json_file << std::endl;
+    std::string surl = read_google_url_with_credentials();
+
+    auto response = read.read_url(surl, json_file);
+
+    if (txt_text_translated)
+    {
+        auto response_data = response["data"];
+        auto trans_array = response_data["translations"];
+        auto item_trans = trans_array[0];
+        std::string translated = item_trans["translatedText"].asString();
+        txt_text_translated->get_buffer()->set_text(translated);
     }
 }
 
@@ -99,14 +144,6 @@ int main(int argc, char *argv[])
 
     read_style();
 
-    CurlReader read;
-    char *content_to_send;
-    //https://www.googleapis.com/language/translate/v2?key=YOUR-API-KEY&source=en&target=de&q=words+to+translate
-
-    auto x = read.read_url("https://api.github.com/repos/whoshuu/cpr/contributors?anon=true&key=value", content_to_send);
-
-    printf("%s", x.c_str());
-
     /***************************************************************************************/
 
     builder = Gtk::Builder::create_from_file("./static/ui-window.glade");
@@ -122,6 +159,14 @@ int main(int argc, char *argv[])
             {
                 // Usar pointer function para métodos estáticos.
                 btn_action_capturar->signal_clicked().connect(sigc::ptr_fun(&on_button_capture_clicked));
+            }
+
+            Gtk::Button *btn_action_traduzir;
+            builder->get_widget("btn_action_traduzir", btn_action_traduzir);
+            if (btn_action_traduzir)
+            {
+                // Usar pointer function para métodos estáticos.
+                btn_action_traduzir->signal_clicked().connect(sigc::ptr_fun(&on_button_traduzir_clicked));
             }
 
             Glib::RefPtr<Gdk::Display> display = menu_window->get_display();
@@ -144,4 +189,25 @@ int main(int argc, char *argv[])
     delete main_window;
 
     return 0;
+}
+
+std::string read_google_url_with_credentials()
+{
+    std::string line;
+    std::string total_file;
+
+    ifstream myfile("url_google_cred.out");
+
+    if (myfile.is_open())
+    {
+        while (getline(myfile, line))
+        {
+            total_file.append(line);
+        }
+        myfile.close();
+    }
+    else
+        cout << "Unable to open file";
+
+    return total_file;
 }
