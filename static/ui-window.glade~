@@ -127,6 +127,7 @@
             <child>
               <object class="GtkButton" id="btn_action_capturar">
                 <property name="label" translatable="yes">Capturar</property>
+                <property name="name">btn_action_capturar</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>

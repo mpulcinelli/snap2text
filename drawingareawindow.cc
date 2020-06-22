@@ -4,8 +4,9 @@
 
 using namespace std;
 
-DrawingAreaWindow::DrawingAreaWindow()
+DrawingAreaWindow::DrawingAreaWindow(int monitor)
 {
+    active_monitor = monitor;
 
     add_events(Gdk::BUTTON_PRESS_MASK);
     add_events(Gdk::POINTER_MOTION_MASK);
@@ -46,11 +47,16 @@ bool DrawingAreaWindow::on_button_press_event(GdkEventButton *event)
 */
 void DrawingAreaWindow::get_screen_pixels()
 {
-    auto display = Gtk::Widget::get_display();
-    auto screen = display->get_default_screen();
-    Glib::RefPtr<Gdk::Window> root_window = screen->get_root_window();
-    screen->get_monitor_geometry(1, rect);
-    pixels = Gdk::Pixbuf::create(root_window, rect.get_x(), rect.get_y(), rect.get_width(), rect.get_height());
+    // get_default_root_window pega a tela completa.
+    auto root = Gdk::Window::get_default_root_window();
+    int height = root->get_height();
+    int width = root->get_width();
+
+    auto display = root->get_display();
+    auto screen = display->get_screen();
+
+    screen->get_monitor_geometry(active_monitor, rect);
+    pixels = Gdk::Pixbuf::create(root, rect.get_x(), rect.get_y(), rect.get_width(), rect.get_height());
 }
 
 /** 
@@ -62,7 +68,7 @@ bool DrawingAreaWindow::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
     if (!firstclick)
     {
         Gdk::Cairo::set_source_pixbuf(cr, pixels);
-        cr->rectangle(rect.get_x(), rect.get_y(), rect.get_width(), rect.get_height());
+        cr->rectangle(0, 0, rect.get_width(), rect.get_height());
         cr->fill();
     }
 
@@ -71,7 +77,7 @@ bool DrawingAreaWindow::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
     {
         // Preenche o background.
         Gdk::Cairo::set_source_pixbuf(cr, pixels);
-        cr->rectangle(rect.get_x(), rect.get_y(), rect.get_width(), rect.get_height());
+        cr->rectangle(0, 0, rect.get_width(), rect.get_height());
         cr->fill();
 
         // Preenche o retângulo.
@@ -109,20 +115,8 @@ bool DrawingAreaWindow::on_focus(Gtk::DirectionType direction)
 
 void DrawingAreaWindow::take_screen_shot()
 {
-    auto curr_window = Gtk::Widget::get_window();
-
-    auto display = Gtk::Widget::get_display();
-    auto screen = display->get_default_screen();
-
-    Gdk::Rectangle rect;
-    screen->get_monitor_geometry(1, rect);
-    curr_window->move(rect.get_x(), rect.get_y());
-
-    Glib::RefPtr<Gdk::Window> root_window = screen->get_root_window();
-
-    auto internal_pixels = Gdk::Pixbuf::create(root_window, x1, y1, m_width, m_heigth);
-    pixels = internal_pixels;
-
+    Glib::RefPtr<Gdk::Window> root_window = this->get_parent_window();
+    pixels = Gdk::Pixbuf::create(root_window, x1, y1, m_width, m_heigth);
     get_text_from_screen_shot();
 }
 

@@ -30,9 +30,8 @@ static void on_scan_finished(char *texto)
     if (main_window)
     {
         main_window->hide();
-        //
-        Gtk::Box *box_results;
 
+        Gtk::Box *box_results;
         builder->get_widget("box_results", box_results);
         if (box_results)
         {
@@ -45,6 +44,13 @@ static void on_scan_finished(char *texto)
             {
                 txt_text_original->get_buffer()->set_text(texto_original);
             }
+        }
+
+        Gtk::Button *btn_action_traduzir;
+        builder->get_widget("btn_action_traduzir", btn_action_traduzir);
+        if (btn_action_traduzir)
+        {
+            btn_action_traduzir->set_visible(true);
         }
     }
 }
@@ -114,9 +120,10 @@ static void on_button_capture_clicked()
             main_window->remove();
             main_window->set_modal(true);
 
-            DrawingAreaWindow *d = new DrawingAreaWindow();
+            DrawingAreaWindow *d = new DrawingAreaWindow(indx);
 
             main_window->add(*d);
+
             d->signal_on_scan_finish().connect(sigc::ptr_fun(&on_scan_finished));
             d->show_all();
 

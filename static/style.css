@@ -3,7 +3,7 @@ window {
 }
 
 #btn_action_capturar {
-  color: #c71eff;
+  background-color: brown;
   -gtkwidget-focus-padding: 1;
   -gtkwidget-focus-line-width: 0;
 }

@@ -11,7 +11,7 @@
 class DrawingAreaWindow : public Gtk::DrawingArea
 {
 public:
-    DrawingAreaWindow();
+    DrawingAreaWindow(int monitor);
     virtual ~DrawingAreaWindow();
     typedef sigc::signal<void, char *> type_signal_on_scan_finish;
     type_signal_on_scan_finish signal_on_scan_finish();
@@ -45,5 +45,6 @@ private:
     bool secondclick;
     void take_screen_shot();
     void get_text_from_screen_shot();
+    int active_monitor = 0;
 };
 #endif // DRAWINGAREA_H
