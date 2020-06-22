@@ -114,7 +114,6 @@
             <child>
               <object class="GtkButton" id="btn_action_traduzir">
                 <property name="label" translatable="yes">Traduzir</property>
-                <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
               </object>
