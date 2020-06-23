@@ -124,7 +124,9 @@ void DrawingAreaWindow::get_text_from_screen_shot()
 {
     tesseract::TessBaseAPI *ocr = new tesseract::TessBaseAPI();
 
-    if (ocr->Init(NULL, "eng"))
+    const char *datapath = "./traineddata/";
+
+    if (ocr->Init(datapath, "eng"))
     {
         fprintf(stderr, "Could not initialize tesseract.\n");
         exit(1);

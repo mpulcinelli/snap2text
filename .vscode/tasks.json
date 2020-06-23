@@ -6,6 +6,8 @@
       "label": "TSK - C/C++: g++ build project files",
       "command": "/bin/g++",
       "args": [
+        "-std=c++17",
+        "-lstdc++fs",
         "-g",
         "${workspaceFolder}/*.cc",
         "-o",
@@ -34,15 +36,22 @@
       "command": "cp -R ${workspaceFolder}/static/ ${workspaceFolder}/bin/"
     },
     {
-      "label": "TSK - Copy Google Credential to bin folder",
+      "label": "TSK - Copy config to bin folder",
       "type": "shell",
-      "command": "cp -R ${workspaceFolder}/url_google_cred.out ${workspaceFolder}/bin/"
+      "command": "cp -R ${workspaceFolder}/app_config.json ${workspaceFolder}/bin/"
     },
+    {
+      "label": "TSK - Copy Tesseract traineddata to bin folder",
+      "type": "shell",
+      "command": "cp -R ${workspaceFolder}/traineddata/ ${workspaceFolder}/bin/"
+    },
+
     {
       "label": "TSK - Copy Static and Build Project",
       "dependsOn": [
         "TSK - Copy static folder to bin",
-        "TSK - Copy Google Credential to bin folder",
+        "TSK - Copy config to bin folder",
+        "TSK - Copy Tesseract traineddata to bin folder",
         "TSK - C/C++: g++ build project files"
       ],
       "group": {

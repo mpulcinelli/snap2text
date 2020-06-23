@@ -7,11 +7,12 @@ class CurlReader
 private:
     /* data */
 public:
-    CurlReader(/* args */);
+    CurlReader(Json::Value app_config);
     ~CurlReader();
 
-    Json::Value read_url(std::string url, std::string);
-    void read_available_languages();
+    Json::Value translate_content(std::string jsondata);
+    std::map<std::string, std::string> read_available_languages();
 
 private:
+    Json::Value app_config_m;
 };

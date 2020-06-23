@@ -3,6 +3,7 @@
 #include "drawingareawindow.h"
 #include "globals.h"
 #include <curl/curl.h>
+#include <filesystem>
 #include <fstream>
 #include <gtk/gtk.h>
 #include <gtk/gtkstyleprovider.h>
@@ -15,12 +16,23 @@
 #include <string>
 
 using namespace std;
-std::string read_google_url_with_credentials();
+
+namespace fs = std::filesystem;
+
+void load_app_config();
+void list_tessdata();
+
+Json::Value app_config_params;
 
 Glib::RefPtr<Gtk::Builder> builder;
 Gtk::Window *main_window = nullptr;
 Gtk::Window *menu_window = nullptr;
 Gtk::ComboBoxText *cbo_lista_monitores;
+Gtk::ComboBoxText *cbo_avail_lang_to_translate;
+Gtk::ComboBoxText *cbo_languages_captura;
+
+std::map<std::string, std::string> avail_lang_to_translate;
+std::list<std::string> files_from_tesseract_data;
 
 static void on_scan_finished(char *texto)
 {
@@ -70,7 +82,7 @@ static void on_button_traduzir_clicked()
     Gtk::TextView *txt_text_translated;
     builder->get_widget("txt_text_translated", txt_text_translated);
 
-    CurlReader read;
+    CurlReader read(app_config_params);
 
     Json::Value root;
 
@@ -81,9 +93,8 @@ static void on_button_traduzir_clicked()
     Json::StreamWriterBuilder jsonbuilder;
     const std::string json_file = Json::writeString(jsonbuilder, root);
     std::cout << json_file << std::endl;
-    std::string surl = read_google_url_with_credentials();
 
-    auto response = read.read_url(surl, json_file);
+    auto response = read.translate_content(json_file);
 
     if (txt_text_translated)
     {
@@ -150,6 +161,11 @@ int main(int argc, char *argv[])
     static Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv, "br.com.marciopulcinelli.snap2text");
 
     read_style();
+    load_app_config();
+    list_tessdata();
+
+    CurlReader read(app_config_params);
+    std::map<std::string, std::string> avail_lang_to_translate = read.read_available_languages();
 
     /***************************************************************************************/
 
@@ -188,6 +204,24 @@ int main(int argc, char *argv[])
                 }
             }
 
+            builder->get_widget("cbo_avail_lang_to_translate", cbo_avail_lang_to_translate);
+            if (cbo_avail_lang_to_translate)
+            {
+                for (auto &i : avail_lang_to_translate)
+                {
+                    cbo_avail_lang_to_translate->append(i.first, i.second);
+                }
+            }
+
+            builder->get_widget("cbo_languages_captura", cbo_languages_captura);
+            if (cbo_languages_captura)
+            {
+                for (auto &i : files_from_tesseract_data)
+                {
+                    cbo_languages_captura->append(i);
+                }
+            }
+
             app->run(*menu_window);
         }
     }
@@ -198,23 +232,35 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-std::string read_google_url_with_credentials()
+void load_app_config()
 {
-    std::string line;
-    std::string total_file;
+    std::ifstream file_conf("app_config.json");
 
-    ifstream myfile("url_google_cred.out");
-
-    if (myfile.is_open())
+    if (file_conf.is_open())
     {
-        while (getline(myfile, line))
-        {
-            total_file.append(line);
-        }
-        myfile.close();
-    }
-    else
-        cout << "Unable to open file";
+        Json::Reader json_reader;
+        std::stringstream buffer;
 
-    return total_file;
+        buffer << file_conf.rdbuf();
+        file_conf.close();
+        json_reader.parse(buffer, app_config_params);
+    }
+}
+
+void list_tessdata()
+{
+    std::string path = "./traineddata/";
+
+    for (const auto &entry : fs::directory_iterator(path))
+    {
+        std::string file = entry.path().filename().c_str();
+
+        std::size_t pos = file.find(".traineddata");
+
+        std::string file_no_ext = file.substr(0, pos);
+
+        files_from_tesseract_data.push_back(file_no_ext);
+
+        std::cout << file_no_ext << std::endl;
+    }
 }
