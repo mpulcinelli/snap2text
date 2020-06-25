@@ -147,7 +147,7 @@
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Traduzir para</property>
+                    <property name="label" translatable="yes">Traduzir para:</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -160,10 +160,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="valign">center</property>
-                    <items>
-                      <item translatable="yes">eng</item>
-                      <item translatable="yes">por</item>
-                    </items>
                   </object>
                   <packing>
                     <property name="expand">False</property>

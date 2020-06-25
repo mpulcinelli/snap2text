@@ -7,3 +7,9 @@ window {
   -gtkwidget-focus-padding: 1;
   -gtkwidget-focus-line-width: 0;
 }
+
+#btn_action_traduzir {
+  background-color: rgb(2, 66, 109);
+  -gtkwidget-focus-padding: 1;
+  -gtkwidget-focus-line-width: 0;
+}

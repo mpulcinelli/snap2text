@@ -20,7 +20,8 @@ using namespace std;
 namespace fs = std::filesystem;
 
 void load_app_config();
-void list_tessdata();
+void list_tessfiledata();
+void setup_components();
 
 Json::Value app_config_params;
 
@@ -34,10 +35,10 @@ Gtk::ComboBoxText *cbo_languages_captura;
 std::map<std::string, std::string> avail_lang_to_translate;
 std::list<std::string> files_from_tesseract_data;
 
-static void on_scan_finished(char *texto)
+static void on_scan_finished(std::string texto)
 {
 
-    std::string texto_original = trim_copy(std::string(texto));
+    std::string texto_original = trim_copy(texto);
 
     if (main_window)
     {
@@ -71,12 +72,32 @@ static void on_button_traduzir_clicked()
 {
     Glib::ustring txt_origem;
     Glib::ustring txt_traduzido;
+    Glib::ustring selected_language_from;
+    Glib::ustring selected_language_to;
 
     Gtk::TextView *txt_text_original;
     builder->get_widget("txt_text_original", txt_text_original);
     if (txt_text_original)
     {
         txt_origem = txt_text_original->get_buffer()->get_text();
+    }
+
+    if (cbo_languages_captura)
+    {
+        selected_language_from = cbo_languages_captura->get_active_id();
+    }
+    else
+    {
+        return;
+    }
+
+    if (cbo_avail_lang_to_translate)
+    {
+        selected_language_to = cbo_avail_lang_to_translate->get_active_id();
+    }
+    else
+    {
+        return;
     }
 
     Gtk::TextView *txt_text_translated;
@@ -87,8 +108,8 @@ static void on_button_traduzir_clicked()
     Json::Value root;
 
     root["q"] = txt_origem.c_str();
-    root["target"] = "pt";
-    root["source"] = "en";
+    root["target"] = selected_language_to.c_str();
+    root["source"] = selected_language_from.c_str();
 
     Json::StreamWriterBuilder jsonbuilder;
     const std::string json_file = Json::writeString(jsonbuilder, root);
@@ -109,14 +130,32 @@ static void on_button_traduzir_clicked()
 static void on_button_capture_clicked()
 {
     int indx = -1;
+    Glib::ustring selected_language;
 
     if (cbo_lista_monitores)
     {
         indx = cbo_lista_monitores->get_active_row_number();
     }
+    else
+    {
+        return;
+    }
+
+    if (cbo_languages_captura)
+    {
+        selected_language = cbo_languages_captura->get_active_id();
+    }
+    else
+    {
+        return;
+    }
 
     // TODO: Incluir mensagem de seleção de monitor inválida.
     if (indx < 0)
+        return;
+
+    //TODO: Incluir mensagem de seleção de linguagem inválida.
+    if (selected_language.empty())
         return;
 
     if (builder)
@@ -131,7 +170,7 @@ static void on_button_capture_clicked()
             main_window->remove();
             main_window->set_modal(true);
 
-            DrawingAreaWindow *d = new DrawingAreaWindow(indx);
+            DrawingAreaWindow *d = new DrawingAreaWindow(indx, selected_language);
 
             main_window->add(*d);
 
@@ -162,72 +201,13 @@ int main(int argc, char *argv[])
 
     read_style();
     load_app_config();
-    list_tessdata();
+    list_tessfiledata();
+    setup_components();
 
-    CurlReader read(app_config_params);
-    std::map<std::string, std::string> avail_lang_to_translate = read.read_available_languages();
-
-    /***************************************************************************************/
-
-    builder = Gtk::Builder::create_from_file("./static/ui-window.glade");
-
-    if (builder)
+    if (menu_window)
     {
-        builder->get_widget("menu_window", menu_window);
-        if (menu_window)
-        {
-            Gtk::Button *btn_action_capturar;
-            builder->get_widget("btn_action_capturar", btn_action_capturar);
-            if (btn_action_capturar)
-            {
-                // Usar pointer function para métodos estáticos.
-                btn_action_capturar->signal_clicked().connect(sigc::ptr_fun(&on_button_capture_clicked));
-            }
-
-            Gtk::Button *btn_action_traduzir;
-            builder->get_widget("btn_action_traduzir", btn_action_traduzir);
-            if (btn_action_traduzir)
-            {
-                // Usar pointer function para métodos estáticos.
-                btn_action_traduzir->signal_clicked().connect(sigc::ptr_fun(&on_button_traduzir_clicked));
-            }
-
-            Glib::RefPtr<Gdk::Display> display = menu_window->get_display();
-            const int num_monitors = display->get_n_monitors();
-
-            builder->get_widget("cbo_monitors", cbo_lista_monitores);
-            if (cbo_lista_monitores)
-            {
-                for (int i = 0; i < num_monitors; i++)
-                {
-                    cbo_lista_monitores->append(std::to_string(i).c_str());
-                }
-            }
-
-            builder->get_widget("cbo_avail_lang_to_translate", cbo_avail_lang_to_translate);
-            if (cbo_avail_lang_to_translate)
-            {
-                for (auto &i : avail_lang_to_translate)
-                {
-                    cbo_avail_lang_to_translate->append(i.first, i.second);
-                }
-            }
-
-            builder->get_widget("cbo_languages_captura", cbo_languages_captura);
-            if (cbo_languages_captura)
-            {
-                for (auto &i : files_from_tesseract_data)
-                {
-                    cbo_languages_captura->append(i);
-                }
-            }
-
-            app->run(*menu_window);
-        }
+        app->run(*menu_window);
     }
-
-    delete menu_window;
-    delete main_window;
 
     return 0;
 }
@@ -247,7 +227,7 @@ void load_app_config()
     }
 }
 
-void list_tessdata()
+void list_tessfiledata()
 {
     std::string path = "./traineddata/";
 
@@ -260,7 +240,79 @@ void list_tessdata()
         std::string file_no_ext = file.substr(0, pos);
 
         files_from_tesseract_data.push_back(file_no_ext);
+    }
+}
 
-        std::cout << file_no_ext << std::endl;
+void setup_components()
+{
+
+    CurlReader read(app_config_params);
+    std::map<std::string, std::string> avail_lang_to_translate = read.read_available_languages();
+
+    if (avail_lang_to_translate.empty())
+        return;
+
+    /***************************************************************************************/
+    // Carrega o recurso de interface.
+    builder = Gtk::Builder::create_from_file("./static/ui-window.glade");
+
+    if (builder)
+    {
+        builder->get_widget("menu_window", menu_window);
+
+        if (!menu_window)
+            return;
+
+        Gtk::Button *btn_action_capturar;
+        builder->get_widget("btn_action_capturar", btn_action_capturar);
+        if (btn_action_capturar)
+        {
+            // Usar pointer function para métodos estáticos.
+            btn_action_capturar->signal_clicked().connect(sigc::ptr_fun(&on_button_capture_clicked));
+        }
+
+        Gtk::Button *btn_action_traduzir;
+        builder->get_widget("btn_action_traduzir", btn_action_traduzir);
+        if (btn_action_traduzir)
+        {
+            // Usar pointer function para métodos estáticos.
+            btn_action_traduzir->signal_clicked().connect(sigc::ptr_fun(&on_button_traduzir_clicked));
+        }
+
+        // Recupera a quantidade de monitores do usuário.
+        Glib::RefPtr<Gdk::Display> display = menu_window->get_display();
+        const int num_monitors = display->get_n_monitors();
+
+        builder->get_widget("cbo_monitors", cbo_lista_monitores);
+        if (cbo_lista_monitores)
+        {
+            for (int i = 0; i < num_monitors; i++)
+            {
+                std::string descript = "";
+                descript.append(display->get_monitor(i)->get_model());
+                descript.append(" - ");
+                descript.append(display->get_monitor(i)->get_manufacturer());
+                cbo_lista_monitores->append(std::to_string(i).c_str(), descript);
+                //cbo_lista_monitores->append(std::to_string(i).c_str(), display->get_monitor(i)->get_model());
+            }
+        }
+
+        builder->get_widget("cbo_avail_lang_to_translate", cbo_avail_lang_to_translate);
+        if (cbo_avail_lang_to_translate)
+        {
+            for (auto &i : avail_lang_to_translate)
+            {
+                cbo_avail_lang_to_translate->append(i.first, i.second);
+            }
+        }
+
+        builder->get_widget("cbo_languages_captura", cbo_languages_captura);
+        if (cbo_languages_captura)
+        {
+            for (auto &i : files_from_tesseract_data)
+            {
+                cbo_languages_captura->append(i, avail_lang_to_translate[i]);
+            }
+        }
     }
 }

@@ -11,9 +11,9 @@
 class DrawingAreaWindow : public Gtk::DrawingArea
 {
 public:
-    DrawingAreaWindow(int monitor);
+    DrawingAreaWindow(int monitor, Glib::ustring language_ocr);
     virtual ~DrawingAreaWindow();
-    typedef sigc::signal<void, char *> type_signal_on_scan_finish;
+    typedef sigc::signal<void, std::string> type_signal_on_scan_finish;
     type_signal_on_scan_finish signal_on_scan_finish();
 
 protected:
@@ -46,5 +46,6 @@ private:
     void take_screen_shot();
     void get_text_from_screen_shot();
     int active_monitor = 0;
+    Glib::ustring active_language_ocr;
 };
 #endif // DRAWINGAREA_H

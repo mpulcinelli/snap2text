@@ -4,10 +4,10 @@
 
 using namespace std;
 
-DrawingAreaWindow::DrawingAreaWindow(int monitor)
+DrawingAreaWindow::DrawingAreaWindow(int monitor, Glib::ustring language_ocr)
 {
     active_monitor = monitor;
-
+    active_language_ocr = language_ocr;
     add_events(Gdk::BUTTON_PRESS_MASK);
     add_events(Gdk::POINTER_MOTION_MASK);
 
@@ -126,7 +126,7 @@ void DrawingAreaWindow::get_text_from_screen_shot()
 
     const char *datapath = "./traineddata/";
 
-    if (ocr->Init(datapath, "eng"))
+    if (ocr->Init(datapath, active_language_ocr.c_str()))
     {
         fprintf(stderr, "Could not initialize tesseract.\n");
         exit(1);
@@ -149,7 +149,11 @@ void DrawingAreaWindow::get_text_from_screen_shot()
 
     /////////////////////////////////////////////////////////////////////
 
-    text_result_from_scan = ocr->GetUTF8Text();
+    std::string text_result_from_scan = ocr->GetUTF8Text();
+
+    text_result_from_scan.erase(std::remove(text_result_from_scan.begin(), text_result_from_scan.end(), '\n'), text_result_from_scan.end());
+
+    const std::string text_to_emit = text_result_from_scan;
 
     ocr->End();
 
