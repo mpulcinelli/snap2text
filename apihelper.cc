@@ -1,4 +1,4 @@
-#include "curlreader.h"
+#include "apihelper.h"
 #include <cstdint>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
@@ -11,12 +11,12 @@
 #include <sstream>
 #include <string>
 
-CurlReader::CurlReader(Json::Value app_config)
+ApiHelper::ApiHelper(Json::Value app_config)
 {
     app_config_m = app_config;
 }
 
-CurlReader::~CurlReader()
+ApiHelper::~ApiHelper()
 {
 }
 
@@ -30,7 +30,7 @@ inline size_t WriteCallback(const char *in,
     return totalBytes;
 }
 
-Json::Value CurlReader::translate_content(std::string jsondata)
+Json::Value ApiHelper::translateContentFromGoogleApi(std::string jsondata)
 {
     std::string url_path = app_config_m["api_google_translator"].asString();
 
@@ -64,12 +64,12 @@ Json::Value CurlReader::translate_content(std::string jsondata)
     return obj_json_result;
 }
 
-std::map<std::string, std::string> CurlReader::read_available_languages()
+Json::Value ApiHelper::readAvailableLanguagesFromGoogleApi()
 {
     std::string url_path = app_config_m["api_google_translator_list_language"].asString();
+    std::string language = app_config_m["app_language"].asString();
 
     std::list<std::string> header;
-    std::map<std::string, std::string> languages_to_return;
 
     Json::Value obj_json;
     Json::Reader json_reader;
@@ -78,7 +78,7 @@ std::map<std::string, std::string> CurlReader::read_available_languages()
     curlpp::Cleanup clean;
     curlpp::Easy r;
 
-    obj_json["target"] = "pt-br";
+    obj_json["target"] = language;
 
     r.setOpt(new curlpp::options::Url(url_path));
     r.setOpt(new curlpp::options::HttpHeader(header));
@@ -89,19 +89,15 @@ std::map<std::string, std::string> CurlReader::read_available_languages()
     r.setOpt(new curlpp::options::WriteStream(&response));
 
     r.perform();
+
     std::string result = std::string(response.str());
 
     Json::Value obj_json_result;
 
     if (json_reader.parse(result, obj_json_result))
     {
-        auto data = obj_json_result["data"];
-        auto languages = data["languages"];
-        for (auto &i : languages)
-        {
-            languages_to_return.insert(std::pair<std::string, std::string>(i["language"].asString(), i["name"].asString()));
-        }
+        return obj_json_result;
     }
 
-    return languages_to_return;
+    return nullptr;
 }

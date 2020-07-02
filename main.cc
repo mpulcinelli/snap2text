@@ -1,7 +1,7 @@
 #include "areacapturewindow.h"
-#include "curlreader.h"
 #include "drawingareawindow.h"
 #include "globals.h"
+#include "googletranslator.h"
 #include <curl/curl.h>
 #include <filesystem>
 #include <fstream>
@@ -22,6 +22,8 @@ namespace fs = std::filesystem;
 void load_app_config();
 void list_tessfiledata();
 void setup_components();
+
+static Glib::RefPtr<Gtk::Application> app;
 
 Json::Value app_config_params;
 
@@ -68,6 +70,17 @@ static void on_scan_finished(std::string texto)
     }
 }
 
+static bool on_mnu_item_quit_clicked(GdkEventButton *button_event)
+{
+    if (app)
+    {
+        app->quit();
+        return true;
+    }
+
+    return false;
+}
+
 static void on_button_traduzir_clicked()
 {
     Glib::ustring txt_origem;
@@ -103,7 +116,7 @@ static void on_button_traduzir_clicked()
     Gtk::TextView *txt_text_translated;
     builder->get_widget("txt_text_translated", txt_text_translated);
 
-    CurlReader read(app_config_params);
+    GoogleTranslator gt(app_config_params);
 
     Json::Value root;
 
@@ -115,7 +128,7 @@ static void on_button_traduzir_clicked()
     const std::string json_file = Json::writeString(jsonbuilder, root);
     std::cout << json_file << std::endl;
 
-    auto response = read.translate_content(json_file);
+    auto response = gt.translateContent(json_file);
 
     if (txt_text_translated)
     {
@@ -197,7 +210,7 @@ static void read_style()
 
 int main(int argc, char *argv[])
 {
-    static Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv, "br.com.marciopulcinelli.snap2text");
+    app = Gtk::Application::create(argc, argv, "br.com.marciopulcinelli.snap2text");
 
     read_style();
     load_app_config();
@@ -246,8 +259,10 @@ void list_tessfiledata()
 void setup_components()
 {
 
-    CurlReader read(app_config_params);
-    std::map<std::string, std::string> avail_lang_to_translate = read.read_available_languages();
+    //CurlReader read(app_config_params);
+    GoogleTranslator gt(app_config_params);
+
+    std::map<std::string, std::string> avail_lang_to_translate = gt.listAllAvailableLanguages();
 
     if (avail_lang_to_translate.empty())
         return;
@@ -277,6 +292,14 @@ void setup_components()
         {
             // Usar pointer function para métodos estáticos.
             btn_action_traduzir->signal_clicked().connect(sigc::ptr_fun(&on_button_traduzir_clicked));
+        }
+
+        Gtk::ImageMenuItem *mnu_item_quit;
+        builder->get_widget("mnu_item_quit", mnu_item_quit);
+        if (mnu_item_quit)
+        {
+            // Usar pointer function para métodos estáticos.
+            mnu_item_quit->signal_button_press_event().connect(sigc::ptr_fun(&on_mnu_item_quit_clicked));
         }
 
         // Recupera a quantidade de monitores do usuário.
