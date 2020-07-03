@@ -1,5 +1,9 @@
 window {
-  background-color: rgba(14, 14, 14, 0.473);
+  background-color: rgba(14, 14, 14, 0.9);
+}
+
+#app_menu_bar {
+  background-color: brown;
 }
 
 #btn_action_capturar {
