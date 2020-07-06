@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Snap2Text
+GenericName=Snap2Text
+Comment=App to grab text from images, convert to text and translate.
+Icon=snap2text
+StartupNotify=true
+Exec=/home/mpulcinelli/Develop/personal/snap2text/bin/snap2text %U
+Categories=GNOME;GTK;Utility

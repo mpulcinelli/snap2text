@@ -40,7 +40,12 @@
     {
       "label": "TSK - Copy config to bin folder",
       "type": "shell",
-      "command": "cp -R ${workspaceFolder}/app_config.json ${workspaceFolder}/bin/"
+      "command": "cp ${workspaceFolder}/app_config.json ${workspaceFolder}/bin/"
+    },
+    {
+      "label": "TSK - Copy desktop shortcut to bin folder",
+      "type": "shell",
+      "command": "cp ${workspaceFolder}/snap2text.desktop ${workspaceFolder}/bin/"
     },
     {
       "label": "TSK - Copy Tesseract traineddata to bin folder",
@@ -52,6 +57,7 @@
       "dependsOn": [
         "TSK - Copy static folder to bin",
         "TSK - Copy config to bin folder",
+        "TSK - Copy desktop shortcut to bin folder",
         "TSK - Copy Tesseract traineddata to bin folder",
         "TSK - C/C++: g++ build project files"
       ],
