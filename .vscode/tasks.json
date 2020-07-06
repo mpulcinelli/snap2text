@@ -28,7 +28,9 @@
       "options": {
         "cwd": "${workspaceFolder}"
       },
-      "problemMatcher": ["$gcc"]
+      "problemMatcher": [
+        "$gcc"
+      ]
     },
     {
       "label": "TSK - Copy static folder to bin",
@@ -45,7 +47,6 @@
       "type": "shell",
       "command": "cp -R ${workspaceFolder}/traineddata/ ${workspaceFolder}/bin/"
     },
-
     {
       "label": "TSK - Copy Static and Build Project",
       "dependsOn": [

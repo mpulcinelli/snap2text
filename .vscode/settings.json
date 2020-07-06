@@ -57,6 +57,9 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "codecvt": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "filesystem": "cpp",
+        "bitset": "cpp",
+        "__nullptr": "cpp"
     }
 }
