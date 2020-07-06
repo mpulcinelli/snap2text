@@ -2,6 +2,7 @@
 #include "drawingareawindow.h"
 #include "globals.h"
 #include "googletranslator.h"
+#include "appintegrity.h"
 #include <curl/curl.h>
 #include <filesystem>
 #include <fstream>
@@ -204,13 +205,28 @@ static void read_style()
     const Glib::RefPtr<Gdk::Screen> screen = Gdk::Screen::get_default();
     const Glib::RefPtr<Gtk::StyleContext> styleContext = Gtk::StyleContext::create();
 
-    css_provider->load_from_path("./static/style.css");
-    styleContext->add_provider_for_screen(screen, css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    std::string exec_path = get_path_no_exe();
+
+    try
+    {
+        css_provider->load_from_path(exec_path + "static/style.css");
+        styleContext->add_provider_for_screen(screen, css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 }
 
 int main(int argc, char *argv[])
 {
     app = Gtk::Application::create(argc, argv, "br.com.marciopulcinelli.snap2text");
+    AppIntegrity appInt;
+
+    if (appInt.CheckConfigFilesIntegrity() != EAppIntegrityCheck::AppGoodToGo)
+    {
+        return 1;
+    }
 
     read_style();
     load_app_config();
@@ -227,7 +243,9 @@ int main(int argc, char *argv[])
 
 void load_app_config()
 {
-    std::ifstream file_conf("app_config.json");
+
+    std::string exec_path = get_path_no_exe();
+    std::ifstream file_conf(exec_path + "app_config.json");
 
     if (file_conf.is_open())
     {
@@ -242,7 +260,8 @@ void load_app_config()
 
 void list_tessfiledata()
 {
-    std::string path = "./traineddata/";
+    std::string exec_path = get_path_no_exe();
+    std::string path = exec_path + "traineddata/";
 
     for (const auto &entry : fs::directory_iterator(path))
     {
@@ -258,8 +277,6 @@ void list_tessfiledata()
 
 void setup_components()
 {
-
-    //CurlReader read(app_config_params);
     GoogleTranslator gt(app_config_params);
 
     std::map<std::string, std::string> avail_lang_to_translate = gt.listAllAvailableLanguages();
@@ -267,9 +284,11 @@ void setup_components()
     if (avail_lang_to_translate.empty())
         return;
 
+    std::string exec_path = get_path_no_exe();
+
     /***************************************************************************************/
     // Carrega o recurso de interface.
-    builder = Gtk::Builder::create_from_file("./static/ui-window.glade");
+    builder = Gtk::Builder::create_from_file(exec_path + "static/ui-window.glade");
 
     if (builder)
     {
