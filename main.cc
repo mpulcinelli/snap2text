@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "googletranslator.h"
 #include "appintegrity.h"
+#include "languagehelper.h"
 #include <curl/curl.h>
 #include <filesystem>
 #include <fstream>
@@ -23,6 +24,7 @@ namespace fs = std::filesystem;
 void load_app_config();
 void list_tessfiledata();
 void setup_components();
+void load_language();
 
 static Glib::RefPtr<Gtk::Application> app;
 
@@ -37,6 +39,7 @@ Gtk::ComboBoxText *cbo_languages_captura;
 
 std::map<std::string, std::string> avail_lang_to_translate;
 std::list<std::string> files_from_tesseract_data;
+LanguageHelper *lhelper;
 
 static void on_scan_finished(std::string texto)
 {
@@ -232,6 +235,7 @@ int main(int argc, char *argv[])
     load_app_config();
     list_tessfiledata();
     setup_components();
+    load_language();
 
     if (menu_window)
     {
@@ -240,7 +244,72 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+void load_language()
+{
+    std::string l = app_config_params.get("app_language", "").asString();
+    lhelper = new LanguageHelper(l);
+    if (lhelper)
+    {
+        if (builder)
+        {
+            Gtk::MenuItem *mnu_file;
+            builder->get_widget("mnu_file", mnu_file);
+            if (mnu_file)
+            {
+                std::string mnu_file_label = lhelper->getItem("mnu_file_label");
+                mnu_file->set_label(mnu_file_label);
+            }
 
+            Gtk::ImageMenuItem *mnu_item_quit;
+            builder->get_widget("mnu_item_quit", mnu_item_quit);
+            if (mnu_item_quit)
+            {
+                std::string mnu_item_quit_label = lhelper->getItem("mnu_item_quit_label");
+                mnu_item_quit->set_label(mnu_item_quit_label);
+            }
+
+            Gtk::Label *lbl_display;
+            builder->get_widget("lbl_display", lbl_display);
+            if (lbl_display)
+            {
+                std::string lbl_display_label = lhelper->getItem("lbl_display_label");
+                lbl_display->set_label(lbl_display_label);
+            }
+
+            Gtk::Label *lbl_capture_in;
+            builder->get_widget("lbl_capture_in", lbl_capture_in);
+            if (lbl_capture_in)
+            {
+                std::string lbl_capture_in_label = lhelper->getItem("lbl_capture_in_label");
+                lbl_capture_in->set_label(lbl_capture_in_label);
+            }
+
+            Gtk::Label *lbl_translate_to;
+            builder->get_widget("lbl_translate_to", lbl_translate_to);
+            if (lbl_translate_to)
+            {
+                std::string lbl_translate_to_label = lhelper->getItem("lbl_translate_to_label");
+                lbl_translate_to->set_label(lbl_translate_to_label);
+            }
+
+            Gtk::Button *btn_action_capturar;
+            builder->get_widget("btn_action_capturar", btn_action_capturar);
+            if (btn_action_capturar)
+            {
+                std::string btn_action_capturar_label = lhelper->getItem("btn_action_capturar_label");
+                btn_action_capturar->set_label(btn_action_capturar_label);
+            }
+
+            Gtk::Button *btn_action_traduzir;
+            builder->get_widget("btn_action_traduzir", btn_action_traduzir);
+            if (btn_action_traduzir)
+            {
+                std::string btn_action_traduzir_label = lhelper->getItem("btn_action_traduzir_label");
+                btn_action_traduzir->set_label(btn_action_traduzir_label);
+            }
+        }
+    }
+}
 void load_app_config()
 {
 
