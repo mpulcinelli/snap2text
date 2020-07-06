@@ -3,17 +3,20 @@ window {
 }
 
 #app_menu_bar {
-  background-color: brown;
+  background-color: brown ;
+  
 }
 
 #btn_action_capturar {
-  background-color: brown;
-  -gtkwidget-focus-padding: 1;
-  -gtkwidget-focus-line-width: 0;
+  background-color: brown ;
+  background-image: none;
 }
 
 #btn_action_traduzir {
-  background-color: rgb(2, 66, 109);
-  -gtkwidget-focus-padding: 1;
-  -gtkwidget-focus-line-width: 0;
+  background-color: rgb(2, 66, 109) ;
+  background-image: none;
+}
+
+#text_separator{
+  background-color: brown ;
 }
