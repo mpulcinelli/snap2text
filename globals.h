@@ -1,6 +1,9 @@
 #include <algorithm>
 #include <cctype>
 #include <locale>
+#include <string>
+#include <limits.h>
+#include <unistd.h>
 
 extern char *text_result_from_scan;
 // trim from start (in place)
@@ -46,4 +49,21 @@ static inline std::string trim_copy(std::string s)
 {
     trim(s);
     return s;
+}
+
+static inline std::string get_path_with_exe()
+{
+    char result[PATH_MAX];
+    ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+    return std::string(result, (count > 0) ? count : 0);
+}
+
+static inline std::string get_path_no_exe()
+{
+    char result[PATH_MAX];
+    ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+    std::string strPath = std::string(result, (count > 0) ? count : 0);
+    std::string::size_type t = strPath.find_last_of("/");
+    strPath = strPath.substr(0, t + 1);
+    return strPath;
 }
