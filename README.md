@@ -40,6 +40,11 @@ This project aims be an application to take screenshots from images (containing 
 
 # Libs Installation
 
+### DBG - DEBUG
+```
+sudo apt-get install gdb
+```
+
 ### glib2.0
 
 ```
