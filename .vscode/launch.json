@@ -20,6 +20,16 @@
           "description": "Enable pretty-printing for gdb",
           "text": "-enable-pretty-printing",
           "ignoreFailures": true
+        },
+        {
+          "description": "Enable interactive mode",
+          "text": "GTK_DEBUG=interactive GOBJECT_DEBUG=instance-count",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Enable statistics",
+          "text": "GOBJECT_DEBUG=instance-count",
+          "ignoreFailures": true
         }
       ],
       "preLaunchTask": "TSK - Copy Static and Build Project",

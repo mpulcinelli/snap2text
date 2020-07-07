@@ -236,8 +236,10 @@ int main(int argc, char *argv[])
     setup_components();
     load_language();
 
+    char *id_to_insert;
+
     Document d;
-    d.createDocument("A NOVA ORDEM", "A NOVA ORDEM MUNDIAL E OS TEMPLÁRIOS.");
+    d.createDocument("A NOVA ORDEM", "A NOVA ORDEM MUNDIAL E OS TEMPLÁRIOS.", id_to_insert);
 
     if (menu_window)
         app->run(*menu_window);

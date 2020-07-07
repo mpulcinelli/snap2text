@@ -4,12 +4,13 @@ class Document
 {
 private:
     /* data */
+    std::string db_path;
 
 public:
     Document(/* args */);
     ~Document();
 
-    int createDocument(std::string title, std::string description);
+    int createDocument(std::string title, std::string description, char *&id_to_insert);
     bool deleteDocument(int id);
     bool editDocument(int id, std::string title, std::string description);
 

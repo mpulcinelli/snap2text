@@ -12,11 +12,40 @@ window {
   background-image: none;
 }
 
+
+
+
 #btn_action_traduzir {
   background-color: rgb(2, 66, 109) ;
   background-image: none;
+  border: 10px;
+  border-color: blue;
+
 }
 
 #text_separator{
   background-color: brown ;
+}
+
+
+.txtdecotarion{
+  background-color: brown ;
+  border: 10px;
+  border-color: blue;
+}
+
+#txt_text_original text {
+  background-color:gray;
+  font-size: 19px;
+  border: 10px;
+  border-color: black;
+  color: whitesmoke;
+}
+
+#txt_text_translated text{
+  background-color:gray;
+  font-size: 19px;
+  border: 10px;
+  border-color: black;
+  color: whitesmoke;
 }
