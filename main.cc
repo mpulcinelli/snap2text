@@ -4,6 +4,7 @@
 #include "googletranslator.h"
 #include "appintegrity.h"
 #include "languagehelper.h"
+#include "document.h"
 #include <curl/curl.h>
 #include <filesystem>
 #include <fstream>
@@ -227,9 +228,7 @@ int main(int argc, char *argv[])
     AppIntegrity appInt;
 
     if (appInt.CheckConfigFilesIntegrity() != EAppIntegrityCheck::AppGoodToGo)
-    {
         return 1;
-    }
 
     read_style();
     load_app_config();
@@ -237,10 +236,11 @@ int main(int argc, char *argv[])
     setup_components();
     load_language();
 
+    Document d;
+    d.createDocument("A NOVA ORDEM", "A NOVA ORDEM MUNDIAL E OS TEMPLÁRIOS.");
+
     if (menu_window)
-    {
         app->run(*menu_window);
-    }
 
     return 0;
 }

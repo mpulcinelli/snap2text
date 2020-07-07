@@ -6,7 +6,7 @@
       "label": "TSK - C/C++: g++ build project files",
       "command": "/bin/g++",
       "args": [
-        "-std=c++17",
+        "-std=c++2a",
         "-lstdc++fs",
         "-g",
         "${workspaceFolder}/*.cc",
@@ -19,6 +19,7 @@
         "tesseract",
         "gtkmm-3.0",
         "curlpp",
+        "sqlite3",
         "jsoncpp",
         "gtk+-3.0`",
         "`curl-config",

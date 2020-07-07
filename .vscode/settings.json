@@ -60,6 +60,7 @@
         "iomanip": "cpp",
         "filesystem": "cpp",
         "bitset": "cpp",
-        "__nullptr": "cpp"
+        "__nullptr": "cpp",
+        "*.cuh": "cpp"
     }
 }
