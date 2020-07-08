@@ -3,138 +3,6 @@
 <interface>
   <requires lib="gtk+" version="3.22"/>
   <!-- interface-css-provider-path style.css -->
-  <object class="GtkImage" id="img_cancel">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">emblem-unreadable</property>
-  </object>
-  <object class="GtkImage" id="img_save">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">emblem-default</property>
-  </object>
-  <object class="GtkDialog">
-    <property name="can_focus">False</property>
-    <property name="title" translatable="yes">Create New Document</property>
-    <property name="modal">True</property>
-    <property name="default_width">400</property>
-    <property name="default_height">200</property>
-    <property name="type_hint">dialog</property>
-    <child internal-child="vbox">
-      <object class="GtkBox">
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
-        <child internal-child="action_area">
-          <object class="GtkButtonBox">
-            <property name="can_focus">False</property>
-            <property name="margin_top">3</property>
-            <property name="margin_bottom">3</property>
-            <property name="layout_style">end</property>
-            <child>
-              <object class="GtkButton" id="btn_cancel_new_document">
-                <property name="label" translatable="yes">Cancel</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="image">img_cancel</property>
-                <property name="image_position">bottom</property>
-                <property name="always_show_image">True</property>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="btn_save_new_document">
-                <property name="label" translatable="yes">Save</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="image">img_save</property>
-                <property name="image_position">bottom</property>
-                <property name="always_show_image">True</property>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="orientation">vertical</property>
-            <property name="homogeneous">True</property>
-            <child>
-              <object class="GtkLabel" id="lbl_new_document">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">New Document Name</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkEntry" id="txt_new_document_name">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Document Description</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkTextView" id="txt_">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">3</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-      </object>
-    </child>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
-  </object>
   <object class="GtkWindow" id="main_window">
     <property name="can_focus">False</property>
     <property name="default_width">500</property>
@@ -156,27 +24,7 @@
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkToolbar">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <child>
-              <object class="GtkToolButton" id="tool_bar_item_new">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-new</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
+          <placeholder/>
         </child>
         <child>
           <object class="GtkNotebook">
@@ -277,6 +125,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="margin_end">7</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -346,6 +195,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="margin_end">7</property>
                         <property name="resize_mode">queue</property>
                       </object>
                       <packing>
@@ -368,9 +218,6 @@
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
                     <property name="baseline_position">top</property>
-                    <child>
-                      <placeholder/>
-                    </child>
                     <child>
                       <object class="GtkTextView" id="txt_text_translated">
                         <property name="name">txt_text_translated</property>
@@ -422,6 +269,9 @@
                       </packing>
                     </child>
                     <child>
+                      <placeholder/>
+                    </child>
+                    <child>
                       <object class="GtkSeparator" id="text_separator">
                         <property name="name">text_separator</property>
                         <property name="visible">True</property>
@@ -436,7 +286,81 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkBox">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkToolbar">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_start">7</property>
+                            <child>
+                              <object class="GtkToolButton" id="tool_bar_item_new">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="stock_id">gtk-new</property>
+                                <signal name="clicked" handler="on_tool_bar_item_new_clicked" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="homogeneous">True</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkToolButton" id="tool_bar_item_add_to_compose">
+                                <property name="name">tool_bar_item_add_to_compose</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="tooltip_text" translatable="yes">Add captured text to compose</property>
+                                <property name="halign">end</property>
+                                <property name="use_underline">True</property>
+                                <property name="stock_id">gtk-convert</property>
+                                <signal name="button-press-event" handler="on_tool_bar_item_add_to_compose_button_press_event" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="homogeneous">True</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <object class="GtkComboBoxText" id="cbo_select_to_compose">
+                            <property name="name">cbo_select_to_compose</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_end">7</property>
+                            <property name="active">0</property>
+                            <items>
+                              <item id="0" translatable="yes">Send Original</item>
+                              <item id="1" translatable="yes">Send Translated</item>
+                            </items>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="pack_type">end</property>
+                            <property name="position">3</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">4</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
@@ -462,12 +386,72 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
-                <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel" id="lbl_new_document1">
+                  <object class="GtkBox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">New Document Name</property>
+                    <child>
+                      <object class="GtkToolbar">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_left">7</property>
+                        <property name="margin_start">7</property>
+                        <child>
+                          <object class="GtkToolButton" id="tool_bar_item_save_document">
+                            <property name="name">tool_bar_item_save_document</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Save Document</property>
+                            <property name="use_underline">True</property>
+                            <property name="stock_id">gtk-save</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="homogeneous">True</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkToolButton" id="tool_bar_item_add_to_compose1">
+                            <property name="name">tool_bar_item_add_to_compose</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Add captured text to compose</property>
+                            <property name="halign">end</property>
+                            <property name="use_underline">True</property>
+                            <property name="stock_id">gtk-convert</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="homogeneous">True</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBoxText" id="cbo_select_to_compose1">
+                        <property name="name">cbo_select_to_compose</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_right">7</property>
+                        <property name="margin_end">7</property>
+                        <property name="active">0</property>
+                        <items>
+                          <item id="0" translatable="yes">Send Original</item>
+                          <item id="1" translatable="yes">Send Translated</item>
+                        </items>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="pack_type">end</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -476,9 +460,14 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="txt_new_document_name1">
+                  <object class="GtkLabel" id="lbl_new_document">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="margin_start">7</property>
+                    <property name="margin_end">7</property>
+                    <property name="margin_top">7</property>
+                    <property name="margin_bottom">7</property>
+                    <property name="label" translatable="yes">New Document Name</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -487,10 +476,12 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkEntry" id="txt_new_document_name">
+                    <property name="name">txt_new_document_name</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Document Description</property>
+                    <property name="can_focus">True</property>
+                    <property name="margin_start">7</property>
+                    <property name="margin_end">7</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -499,9 +490,15 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkTextView" id="txt_1">
+                  <object class="GtkLabel" id="lbl_new_document_description">
+                    <property name="name">lbl_new_document_description</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="margin_start">7</property>
+                    <property name="margin_end">7</property>
+                    <property name="margin_top">7</property>
+                    <property name="margin_bottom">7</property>
+                    <property name="label" translatable="yes">Document Description</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -509,9 +506,71 @@
                     <property name="position">3</property>
                   </packing>
                 </child>
+                <child>
+                  <object class="GtkTextView" id="txt_new_document_description">
+                    <property name="name">txt_new_document_description</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="margin_start">7</property>
+                    <property name="margin_end">7</property>
+                    <property name="left_margin">7</property>
+                    <property name="right_margin">7</property>
+                    <property name="top_margin">7</property>
+                    <property name="bottom_margin">7</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="margin_start">7</property>
+                    <property name="margin_end">7</property>
+                    <property name="margin_top">7</property>
+                    <property name="margin_bottom">7</property>
+                    <property name="label" translatable="yes">Captured Texts</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">5</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow" id="wdl_scroller">
+                    <property name="name">wdl_scroller</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <object class="GtkTreeView" id="grd_captured_items">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="margin_start">7</property>
+                        <property name="margin_end">7</property>
+                        <property name="reorderable">True</property>
+                        <property name="enable_grid_lines">both</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection"/>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="pack_type">end</property>
+                    <property name="position">6</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="position">1</property>
+                <property name="tab_expand">True</property>
               </packing>
             </child>
             <child type="tab">

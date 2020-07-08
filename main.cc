@@ -2,6 +2,7 @@
 #include "drawingareawindow.h"
 #include "globals.h"
 #include "googletranslator.h"
+#include "gridmodel.h"
 #include "appintegrity.h"
 #include "languagehelper.h"
 #include "document.h"
@@ -37,6 +38,8 @@ Gtk::Window *menu_window = nullptr;
 Gtk::ComboBoxText *cbo_lista_monitores;
 Gtk::ComboBoxText *cbo_avail_lang_to_translate;
 Gtk::ComboBoxText *cbo_languages_captura;
+GridModel m_Columns;
+Glib::RefPtr<Gtk::ListStore> m_refTreeModel;
 
 std::map<std::string, std::string> avail_lang_to_translate;
 std::list<std::string> files_from_tesseract_data;
@@ -84,6 +87,70 @@ static bool on_mnu_item_quit_clicked(GdkEventButton *button_event)
     }
 
     return false;
+}
+
+static void on_tool_bar_item_add_to_compose_button_press_event()
+{
+    typedef Gtk::TreeModel::Children type_children;
+    type_children children = m_refTreeModel->children();
+
+    unsigned int i = 1;
+
+    for (type_children::iterator iter = children.begin(); iter != children.end(); ++iter)
+    {
+        i++;
+    }
+
+    Gtk::ComboBoxText *cbo_select_to_compose;
+    Glib::ustring txt_origem;
+    builder->get_widget("cbo_select_to_compose", cbo_select_to_compose);
+    if (cbo_select_to_compose)
+    {
+        Glib::ustring selected = cbo_select_to_compose->get_active_id();
+        if (selected == "0")
+        {
+            Gtk::TextView *txt_text_original;
+            Glib::ustring txt_origem;
+            builder->get_widget("txt_text_original", txt_text_original);
+            if (txt_text_original)
+            {
+                txt_origem = txt_text_original->get_buffer()->get_text();
+                Gtk::TreeModel::Row row = *(m_refTreeModel->append());
+                row[m_Columns.m_col_id] = i;
+                row[m_Columns.m_col_text] = txt_origem;
+            }
+        }
+        else if (selected == "1")
+        {
+            Gtk::TextView *txt_text_translated;
+            Glib::ustring txt_translated;
+            builder->get_widget("txt_text_translated", txt_text_translated);
+            if (txt_text_translated)
+            {
+                txt_translated = txt_text_translated->get_buffer()->get_text();
+                Gtk::TreeModel::Row row = *(m_refTreeModel->append());
+                row[m_Columns.m_col_id] = i;
+                row[m_Columns.m_col_text] = txt_translated;
+            }
+        }
+    }
+}
+
+static void on_tool_bar_item_new_clicked()
+{
+    Gtk::TextView *txt_text_original;
+    builder->get_widget("txt_text_original", txt_text_original);
+    if (txt_text_original)
+    {
+        txt_text_original->get_buffer()->set_text("");
+    }
+
+    Gtk::TextView *txt_text_translated;
+    builder->get_widget("txt_text_translated", txt_text_translated);
+    if (txt_text_translated)
+    {
+        txt_text_translated->get_buffer()->set_text("");
+    }
 }
 
 static void on_button_traduzir_clicked()
@@ -392,6 +459,38 @@ void setup_components()
             mnu_item_quit->signal_button_press_event().connect(sigc::ptr_fun(&on_mnu_item_quit_clicked));
         }
 
+        Gtk::ToolButton *tool_bar_item_add_to_compose;
+        builder->get_widget("tool_bar_item_add_to_compose", tool_bar_item_add_to_compose);
+        if (tool_bar_item_add_to_compose)
+        {
+            // Usar pointer function para métodos estáticos.
+            tool_bar_item_add_to_compose->signal_clicked().connect(sigc::ptr_fun(&on_tool_bar_item_add_to_compose_button_press_event));
+        }
+
+        Gtk::ToolButton *tool_bar_item_new;
+        builder->get_widget("tool_bar_item_new", tool_bar_item_new);
+        if (tool_bar_item_new)
+        {
+            // Usar pointer function para métodos estáticos.
+            tool_bar_item_new->signal_clicked().connect(sigc::ptr_fun(&on_tool_bar_item_new_clicked));
+        }
+
+        Gtk::TreeView *grd_captured_items;
+        builder->get_widget("grd_captured_items", grd_captured_items);
+        if (grd_captured_items)
+        {
+            m_refTreeModel = Gtk::ListStore::create(m_Columns);
+            grd_captured_items->set_model(m_refTreeModel);
+
+            grd_captured_items->append_column("Id", m_Columns.m_col_id);
+            grd_captured_items->append_column_editable("Captured Text", m_Columns.m_col_text);
+
+            for (guint i = 0; i < 2; i++)
+            {
+                grd_captured_items->get_column(i)->set_reorderable();
+            }
+        }
+
         // Recupera a quantidade de monitores do usuário.
         Glib::RefPtr<Gdk::Display> display = menu_window->get_display();
         const int num_monitors = display->get_n_monitors();
@@ -406,7 +505,6 @@ void setup_components()
                 descript.append(" - ");
                 descript.append(display->get_monitor(i)->get_manufacturer());
                 cbo_lista_monitores->append(std::to_string(i).c_str(), descript);
-                //cbo_lista_monitores->append(std::to_string(i).c_str(), display->get_monitor(i)->get_model());
             }
         }
 

@@ -49,3 +49,19 @@ window {
   border-color: black;
   color: whitesmoke;
 }
+
+#txt_new_document_name{
+  background-color:gray;
+  font-size: 19px;
+  border: 10px;
+  border-color: black;
+  color: whitesmoke;
+}
+#txt_new_document_description text{
+  background-color:gray;
+  font-size: 19px;
+  border: 10px;
+  border-color: black;
+  color: whitesmoke;
+}
+
