@@ -219,57 +219,114 @@
                     <property name="orientation">vertical</property>
                     <property name="baseline_position">top</property>
                     <child>
-                      <object class="GtkTextView" id="txt_text_translated">
-                        <property name="name">txt_text_translated</property>
-                        <property name="height_request">150</property>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="margin_start">4</property>
-                        <property name="margin_end">4</property>
-                        <property name="margin_top">4</property>
-                        <property name="margin_bottom">4</property>
-                        <property name="wrap_mode">word</property>
-                        <property name="left_margin">7</property>
-                        <property name="right_margin">7</property>
-                        <property name="top_margin">7</property>
-                        <property name="bottom_margin">7</property>
+                        <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel" id="lbl_original">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_start">7</property>
+                            <property name="margin_end">7</property>
+                            <property name="margin_top">7</property>
+                            <property name="margin_bottom">7</property>
+                            <property name="label" translatable="yes">Original</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkTextView" id="txt_text_translated">
+                            <property name="name">txt_text_translated</property>
+                            <property name="height_request">150</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="margin_start">7</property>
+                            <property name="margin_end">7</property>
+                            <property name="margin_top">7</property>
+                            <property name="margin_bottom">7</property>
+                            <property name="wrap_mode">word</property>
+                            <property name="left_margin">7</property>
+                            <property name="right_margin">7</property>
+                            <property name="top_margin">7</property>
+                            <property name="bottom_margin">7</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">True</property>
                         <property name="fill">True</property>
                         <property name="pack_type">end</property>
-                        <property name="position">1</property>
+                        <property name="position">-1</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkTextView" id="txt_text_original">
-                        <property name="name">txt_text_original</property>
-                        <property name="height_request">150</property>
+                      <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="margin_start">4</property>
-                        <property name="margin_end">4</property>
-                        <property name="margin_top">4</property>
-                        <property name="margin_bottom">4</property>
-                        <property name="wrap_mode">word</property>
-                        <property name="left_margin">7</property>
-                        <property name="right_margin">7</property>
-                        <property name="top_margin">7</property>
-                        <property name="bottom_margin">7</property>
-                        <style>
-                          <class name=".txtdecotarion"/>
-                        </style>
+                        <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel" id="lbl_translated">
+                            <property name="name">lbl_translated</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_start">7</property>
+                            <property name="margin_end">7</property>
+                            <property name="margin_top">7</property>
+                            <property name="margin_bottom">7</property>
+                            <property name="label" translatable="yes">Translated</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkTextView" id="txt_text_original">
+                            <property name="name">txt_text_original</property>
+                            <property name="height_request">150</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="margin_start">7</property>
+                            <property name="margin_end">7</property>
+                            <property name="margin_top">7</property>
+                            <property name="margin_bottom">7</property>
+                            <property name="wrap_mode">word</property>
+                            <property name="left_margin">7</property>
+                            <property name="right_margin">7</property>
+                            <property name="top_margin">7</property>
+                            <property name="bottom_margin">7</property>
+                            <style>
+                              <class name=".txtdecotarion"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">True</property>
                         <property name="fill">True</property>
                         <property name="padding">3</property>
                         <property name="pack_type">end</property>
-                        <property name="position">2</property>
+                        <property name="position">1</property>
                       </packing>
-                    </child>
-                    <child>
-                      <placeholder/>
                     </child>
                     <child>
                       <object class="GtkSeparator" id="text_separator">
@@ -282,8 +339,11 @@
                       <packing>
                         <property name="expand">True</property>
                         <property name="fill">True</property>
-                        <property name="position">3</property>
+                        <property name="position">2</property>
                       </packing>
+                    </child>
+                    <child>
+                      <placeholder/>
                     </child>
                     <child>
                       <object class="GtkBox">
@@ -394,8 +454,23 @@
                       <object class="GtkToolbar">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="margin_left">7</property>
                         <property name="margin_start">7</property>
+                        <child>
+                          <object class="GtkToolButton" id="tool_bar_item_add_new_document">
+                            <property name="name">tool_bar_item_add_new_document</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">Clear to create new document</property>
+                            <property name="halign">end</property>
+                            <property name="use_underline">True</property>
+                            <property name="stock_id">gtk-new</property>
+                            <signal name="clicked" handler="on_tool_bar_item_add_new_document_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="homogeneous">True</property>
+                          </packing>
+                        </child>
                         <child>
                           <object class="GtkToolButton" id="tool_bar_item_save_document">
                             <property name="name">tool_bar_item_save_document</property>
@@ -404,21 +479,7 @@
                             <property name="tooltip_text" translatable="yes">Save Document</property>
                             <property name="use_underline">True</property>
                             <property name="stock_id">gtk-save</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="homogeneous">True</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkToolButton" id="tool_bar_item_add_to_compose1">
-                            <property name="name">tool_bar_item_add_to_compose</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Add captured text to compose</property>
-                            <property name="halign">end</property>
-                            <property name="use_underline">True</property>
-                            <property name="stock_id">gtk-convert</property>
+                            <signal name="clicked" handler="on_tool_bar_item_save_document_clicked" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -433,24 +494,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkComboBoxText" id="cbo_select_to_compose1">
-                        <property name="name">cbo_select_to_compose</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_right">7</property>
-                        <property name="margin_end">7</property>
-                        <property name="active">0</property>
-                        <items>
-                          <item id="0" translatable="yes">Send Original</item>
-                          <item id="1" translatable="yes">Send Translated</item>
-                        </items>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="pack_type">end</property>
-                        <property name="position">3</property>
-                      </packing>
+                      <placeholder/>
                     </child>
                   </object>
                   <packing>

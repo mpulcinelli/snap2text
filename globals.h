@@ -9,18 +9,13 @@ extern char *text_result_from_scan;
 // trim from start (in place)
 static inline void ltrim(std::string &s)
 {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
-                return !std::isspace(ch);
-            }));
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) { return !std::isspace(ch); }));
 }
 
 // trim from end (in place)
 static inline void rtrim(std::string &s)
 {
-    s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
-                return !std::isspace(ch);
-            }).base(),
-            s.end());
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) { return !std::isspace(ch); }).base(), s.end());
 }
 
 // trim from both ends (in place)
@@ -70,14 +65,11 @@ static inline std::string get_path_no_exe()
 
 static inline void findAndReplaceAll(std::string &data, std::string toSearch, std::string replaceStr)
 {
-    // Get the first occurrence
     size_t pos = data.find(toSearch);
-    // Repeat till end is reached
+
     while (pos != std::string::npos)
     {
-        // Replace this occurrence of Sub String
         data.replace(pos, toSearch.size(), replaceStr);
-        // Get the next occurrence from the current position
         pos = data.find(toSearch, pos + replaceStr.size());
     }
 }

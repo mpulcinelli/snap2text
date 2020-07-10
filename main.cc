@@ -135,6 +135,41 @@ static void on_tool_bar_item_add_to_compose_button_press_event()
         }
     }
 }
+static void on_tool_bar_item_add_new_document_clicked()
+{
+    Gtk::Entry *txt_new_document_name;
+    builder->get_widget("txt_new_document_name", txt_new_document_name);
+    if (txt_new_document_name)
+    {
+        txt_new_document_name->get_buffer()->set_text("");
+    }
+    Gtk::TextView *txt_new_document_description;
+    builder->get_widget("txt_new_document_description", txt_new_document_description);
+    if (txt_new_document_description)
+    {
+        txt_new_document_description->get_buffer()->set_text("");
+    }
+
+    typedef Gtk::TreeModel::Children type_children;
+    type_children children = m_refTreeModel->children();
+
+    for (type_children::iterator iter = children.begin(); iter != children.end(); ++iter)
+    {
+        m_refTreeModel->erase(iter);
+    }
+}
+
+static void on_tool_bar_item_save_document_clicked()
+{
+    char *id_to_insert;
+
+    Document d;
+    bool hd = d.hasDocument("29ca549a-5073-449a-a731-c39a0096a321");
+
+    //d.createDocument("A NOVA ORDEM", "A NOVA ORDEM MUNDIAL E OS TEMPLÁRIOS.", id_to_insert);
+
+    // verificar se existe o
+}
 
 static void on_tool_bar_item_new_clicked()
 {
@@ -303,11 +338,6 @@ int main(int argc, char *argv[])
     setup_components();
     load_language();
 
-    char *id_to_insert;
-
-    Document d;
-    d.createDocument("A NOVA ORDEM", "A NOVA ORDEM MUNDIAL E OS TEMPLÁRIOS.", id_to_insert);
-
     if (menu_window)
         app->run(*menu_window);
 
@@ -467,12 +497,28 @@ void setup_components()
             tool_bar_item_add_to_compose->signal_clicked().connect(sigc::ptr_fun(&on_tool_bar_item_add_to_compose_button_press_event));
         }
 
+        Gtk::ToolButton *tool_bar_item_save_document;
+        builder->get_widget("tool_bar_item_save_document", tool_bar_item_save_document);
+        if (tool_bar_item_save_document)
+        {
+            // Usar pointer function para métodos estáticos.
+            tool_bar_item_save_document->signal_clicked().connect(sigc::ptr_fun(&on_tool_bar_item_save_document_clicked));
+        }
+
         Gtk::ToolButton *tool_bar_item_new;
         builder->get_widget("tool_bar_item_new", tool_bar_item_new);
         if (tool_bar_item_new)
         {
             // Usar pointer function para métodos estáticos.
             tool_bar_item_new->signal_clicked().connect(sigc::ptr_fun(&on_tool_bar_item_new_clicked));
+        }
+
+        Gtk::ToolButton *tool_bar_item_add_new_document;
+        builder->get_widget("tool_bar_item_add_new_document", tool_bar_item_add_new_document);
+        if (tool_bar_item_add_new_document)
+        {
+            // Usar pointer function para métodos estáticos.
+            tool_bar_item_add_new_document->signal_clicked().connect(sigc::ptr_fun(&on_tool_bar_item_add_new_document_clicked));
         }
 
         Gtk::TreeView *grd_captured_items;

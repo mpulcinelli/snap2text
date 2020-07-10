@@ -61,6 +61,8 @@
         "filesystem": "cpp",
         "bitset": "cpp",
         "__nullptr": "cpp",
-        "*.cuh": "cpp"
+        "*.cuh": "cpp",
+        "__hash_table": "cpp",
+        "__tree": "cpp"
     }
 }
