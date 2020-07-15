@@ -1,11 +1,11 @@
+#include "appintegrity.h"
 #include "areacapturewindow.h"
+#include "document.h"
 #include "drawingareawindow.h"
 #include "globals.h"
 #include "googletranslator.h"
 #include "gridmodel.h"
-#include "appintegrity.h"
 #include "languagehelper.h"
-#include "document.h"
 #include <curl/curl.h>
 #include <filesystem>
 #include <fstream>
@@ -39,7 +39,10 @@ Gtk::ComboBoxText *cbo_lista_monitores;
 Gtk::ComboBoxText *cbo_avail_lang_to_translate;
 Gtk::ComboBoxText *cbo_languages_captura;
 GridModel m_Columns;
-Glib::RefPtr<Gtk::ListStore> m_refTreeModel;
+Glib::RefPtr<Gtk::ListStore> m_refTreeModelGrid;
+
+Gtk::ComboBox *cbo_list_documents;
+Glib::RefPtr<Gtk::ListStore> m_refTreeModel_combo_documents;
 
 std::map<std::string, std::string> avail_lang_to_translate;
 std::list<std::string> files_from_tesseract_data;
@@ -92,7 +95,7 @@ static bool on_mnu_item_quit_clicked(GdkEventButton *button_event)
 static void on_tool_bar_item_add_to_compose_button_press_event()
 {
     typedef Gtk::TreeModel::Children type_children;
-    type_children children = m_refTreeModel->children();
+    type_children children = m_refTreeModelGrid->children();
 
     unsigned int i = 1;
 
@@ -115,7 +118,7 @@ static void on_tool_bar_item_add_to_compose_button_press_event()
             if (txt_text_original)
             {
                 txt_origem = txt_text_original->get_buffer()->get_text();
-                Gtk::TreeModel::Row row = *(m_refTreeModel->append());
+                Gtk::TreeModel::Row row = *(m_refTreeModelGrid->append());
                 row[m_Columns.m_col_id] = i;
                 row[m_Columns.m_col_text] = txt_origem;
             }
@@ -128,7 +131,7 @@ static void on_tool_bar_item_add_to_compose_button_press_event()
             if (txt_text_translated)
             {
                 txt_translated = txt_text_translated->get_buffer()->get_text();
-                Gtk::TreeModel::Row row = *(m_refTreeModel->append());
+                Gtk::TreeModel::Row row = *(m_refTreeModelGrid->append());
                 row[m_Columns.m_col_id] = i;
                 row[m_Columns.m_col_text] = txt_translated;
             }
@@ -151,11 +154,11 @@ static void on_tool_bar_item_add_new_document_clicked()
     }
 
     typedef Gtk::TreeModel::Children type_children;
-    type_children children = m_refTreeModel->children();
+    type_children children = m_refTreeModelGrid->children();
 
     for (type_children::iterator iter = children.begin(); iter != children.end(); ++iter)
     {
-        m_refTreeModel->erase(iter);
+        m_refTreeModelGrid->erase(iter);
     }
 }
 
@@ -525,8 +528,8 @@ void setup_components()
         builder->get_widget("grd_captured_items", grd_captured_items);
         if (grd_captured_items)
         {
-            m_refTreeModel = Gtk::ListStore::create(m_Columns);
-            grd_captured_items->set_model(m_refTreeModel);
+            m_refTreeModelGrid = Gtk::ListStore::create(m_Columns);
+            grd_captured_items->set_model(m_refTreeModelGrid);
 
             grd_captured_items->append_column("Id", m_Columns.m_col_id);
             grd_captured_items->append_column_editable("Captured Text", m_Columns.m_col_text);
@@ -535,6 +538,30 @@ void setup_components()
             {
                 grd_captured_items->get_column(i)->set_reorderable();
             }
+        }
+
+        Gtk::ComboBox *cbo_list_documents;
+        builder->get_widget("cbo_list_documents", cbo_list_documents);
+        if (cbo_list_documents)
+        {
+            DocumentCombobox m_Columns_combobox_document;
+
+            m_refTreeModel_combo_documents = Gtk::ListStore::create(m_Columns_combobox_document);
+            cbo_list_documents->set_model(m_refTreeModel_combo_documents);
+
+            // Gtk::TreeModel::Row cbo_doc_row = *(m_refTreeModel_combo_documents->append());
+            // cbo_doc_row[m_Columns_combobox_document.m_col_id] = 1;
+            // cbo_doc_row[m_Columns_combobox_document.m_col_name] = "Billy Bob";
+            // cbo_doc_row[m_Columns_combobox_document.m_col_extra] = "something";
+            // cbo_list_documents->set_active(cbo_doc_row);
+
+            // cbo_doc_row = *(m_refTreeModel_combo_documents->append());
+            // cbo_doc_row[m_Columns_combobox_document.m_col_id] = 2;
+            // cbo_doc_row[m_Columns_combobox_document.m_col_name] = "teste Billy Bob";
+            // cbo_doc_row[m_Columns_combobox_document.m_col_extra] = "teste something";
+
+            // cbo_list_documents->pack_start(m_Columns_combobox_document.m_col_id);
+            // cbo_list_documents->pack_start(m_Columns_combobox_document.m_col_name);
         }
 
         // Recupera a quantidade de monitores do usuário.

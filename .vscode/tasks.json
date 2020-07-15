@@ -18,13 +18,11 @@
         "lept",
         "tesseract",
         "gtkmm-3.0",
+        "libcurl",
         "curlpp",
         "sqlite3",
         "jsoncpp",
         "gtk+-3.0`",
-        "`curl-config",
-        "--libs",
-        "--cflags`",
         "-luuid"
       ],
       "options": {

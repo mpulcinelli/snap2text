@@ -1,5 +1,7 @@
-#include <string>
 #include <ctime>
+#include <gtkmm/comboboxtext.h>
+#include <gtkmm/liststore.h>
+#include <string>
 #include <vector>
 
 struct DocumentModel
@@ -8,6 +10,22 @@ struct DocumentModel
     std::string Title;
     std::string Description;
     std::time_t CreatedDate;
+};
+class DocumentCombobox : public Gtk::TreeModel::ColumnRecord
+{
+private:
+    /* data */
+public:
+    DocumentCombobox()
+    {
+        add(m_col_id);
+        add(m_col_name);
+        add(m_col_extra);
+    }
+
+    Gtk::TreeModelColumn<int> m_col_id;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_name;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_extra;
 };
 
 class Document
