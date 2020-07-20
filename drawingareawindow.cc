@@ -1,8 +1,14 @@
 #include "drawingareawindow.h"
 #include "globals.h"
 #include "menuappwindow.h"
+#include <filesystem>
+#include <gdk-pixbuf/gdk-pixdata.h>
+
+#include <gtk/gtk.h>
+#include <uuid/uuid.h>
 
 using namespace std;
+namespace fs = std::filesystem;
 
 DrawingAreaWindow::DrawingAreaWindow(int monitor, Glib::ustring language_ocr)
 {
@@ -134,20 +140,14 @@ void DrawingAreaWindow::get_text_from_screen_shot()
 
     ocr->SetPageSegMode(tesseract::PSM_AUTO);
 
-    /////////////////////////////////////////////////////////////////////
-    /* GAMBIARRA - O ideal seria pegar o objeto pixels (Glib::RefPtr<Gdk::Pixbuf>) e converter para Pix*
-        - SetImage(Pix* pix); ou
-        - void SetImage(const unsigned char* imagedata, int width, int height,
-                int bytes_per_pixel, int bytes_per_line);        
-    */
+    gchar *buffer_img;
+    gsize buffer_size;
 
-    pixels->save("./file.png", "png");
+    pixels->save_to_buffer(buffer_img, buffer_size);
 
-    Pix *image = pixRead("./file.png");
+    Pix *image = pixReadMemPng((const l_uint8 *)buffer_img, buffer_size);
 
     ocr->SetImage(image);
-
-    /////////////////////////////////////////////////////////////////////
 
     std::string text_result_from_scan = ocr->GetUTF8Text();
 
