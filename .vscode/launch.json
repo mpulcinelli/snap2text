@@ -10,7 +10,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/bin/snap2text",
       "args": [],
-      "stopAtEntry": false,
+      "stopAtEntry": true,
       "cwd": "${workspaceFolder}/bin",
       "environment": [],
       "externalConsole": false,
@@ -33,7 +33,11 @@
         }
       ],
       "preLaunchTask": "TSK - Copy Static and Build Project",
-      "miDebuggerPath": "/usr/bin/gdb"
+      "miDebuggerPath": "/usr/bin/gdb",
+      "logging": {
+        "engineLogging": true,
+        "trace": true
+      }
     }
   ]
 }

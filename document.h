@@ -46,6 +46,7 @@ public:
     bool deleteDocument(char *&id);
     bool editDocument(char *&id, std::string title, std::string description);
     bool hasDocument(std::string id);
+    int getDocument(std::string id);
     ///////////////////////////////////////////////////////////////////
 
     int addSession(char *idDocument, std::string content);

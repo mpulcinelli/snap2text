@@ -1,12 +1,14 @@
 #include "document.h"
+
 #include "globals.h"
-#include <string>
-#include <sqlite3.h>
-#include <iostream>
 #include <ctime>
 #include <fstream>
-#include <uuid/uuid.h>
+#include <iostream>
+
+#include <sqlite3.h>
 #include <string.h>
+#include <string>
+#include <uuid/uuid.h>
 
 using namespace std;
 
@@ -24,9 +26,6 @@ Document::~Document()
 
 int Document::staticCallbackDocument(void *param, int argc, char **argv, char **azColName)
 {
-    // Document *cust = reinterpret_cast<Document *>(param);
-    // return cust->callbackDocument(argc, argv, azColName);
-
     DocumentModel documentModel;
 
     for (int i = 0; i < argc; i++)
@@ -93,6 +92,12 @@ int Document::callbackDocument(int argc, char **argv, char **azColName)
     }
 
     cout << endl;
+
+    return 0;
+}
+
+int Document::getDocument(std::string id)
+{
 
     return 0;
 }
