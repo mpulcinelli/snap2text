@@ -46,11 +46,11 @@ Glib::RefPtr<Gtk::ListStore> m_refTreeModel_combo_documents;
 
 std::map<std::string, std::string> avail_lang_to_translate;
 std::list<std::string> files_from_tesseract_data;
-LanguageHelper *lhelper;
+
+std::string app_path;
 
 static void on_scan_finished(std::string texto)
 {
-
     std::string texto_original = trim_copy(texto);
 
     if (main_window)
@@ -308,17 +308,20 @@ static void on_button_capture_clicked()
     }
 }
 
+static void set_app_path()
+{
+    app_path = get_path_no_exe();
+}
+
 static void read_style()
 {
     const Glib::RefPtr<Gtk::CssProvider> css_provider = Gtk::CssProvider::create();
     const Glib::RefPtr<Gdk::Screen> screen = Gdk::Screen::get_default();
     const Glib::RefPtr<Gtk::StyleContext> styleContext = Gtk::StyleContext::create();
 
-    std::string exec_path = get_path_no_exe();
-
     try
     {
-        css_provider->load_from_path(exec_path + "static/style.css");
+        css_provider->load_from_path(app_path + "static/style.css");
         styleContext->add_provider_for_screen(screen, css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     }
     catch (const std::exception &e)
@@ -330,9 +333,12 @@ static void read_style()
 int main(int argc, char *argv[])
 {
     app = Gtk::Application::create(argc, argv, "br.com.marciopulcinelli.snap2text");
-    AppIntegrity appInt;
 
-    if (appInt.CheckConfigFilesIntegrity() != EAppIntegrityCheck::AppGoodToGo)
+    unique_ptr<AppIntegrity> appInt = make_unique<AppIntegrity>();
+
+    set_app_path();
+
+    if (appInt->CheckConfigFilesIntegrity() != EAppIntegrityCheck::AppGoodToGo)
         return 1;
 
     read_style();
@@ -349,7 +355,8 @@ int main(int argc, char *argv[])
 void load_language()
 {
     std::string l = app_config_params.get("app_language", "").asString();
-    lhelper = new LanguageHelper(l);
+    unique_ptr<LanguageHelper> lhelper = make_unique<LanguageHelper>(l);
+
     if (lhelper)
     {
         if (builder)
@@ -415,8 +422,7 @@ void load_language()
 void load_app_config()
 {
 
-    std::string exec_path = get_path_no_exe();
-    std::ifstream file_conf(exec_path + "app_config.json");
+    std::ifstream file_conf(app_path + "static/app_config.json");
 
     if (file_conf.is_open())
     {
@@ -431,8 +437,7 @@ void load_app_config()
 
 void list_tessfiledata()
 {
-    std::string exec_path = get_path_no_exe();
-    std::string path = exec_path + "traineddata/";
+    std::string path = app_path + "static/traineddata/";
 
     for (const auto &entry : fs::directory_iterator(path))
     {
@@ -448,18 +453,16 @@ void list_tessfiledata()
 
 void setup_components()
 {
-    GoogleTranslator gt(app_config_params);
+    unique_ptr<GoogleTranslator> gt = make_unique<GoogleTranslator>(app_config_params);
 
-    std::map<std::string, std::string> avail_lang_to_translate = gt.listAllAvailableLanguages();
+    std::map<std::string, std::string> avail_lang_to_translate = gt->listAllAvailableLanguages();
 
     if (avail_lang_to_translate.empty())
         return;
 
-    std::string exec_path = get_path_no_exe();
-
     /***************************************************************************************/
     // Carrega o recurso de interface.
-    builder = Gtk::Builder::create_from_file(exec_path + "static/ui-window.glade");
+    builder = Gtk::Builder::create_from_file(app_path + "static/ui-window.glade");
 
     if (builder)
     {

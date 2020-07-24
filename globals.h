@@ -1,11 +1,10 @@
 #include <algorithm>
 #include <cctype>
+#include <limits.h>
 #include <locale>
 #include <string>
-#include <limits.h>
 #include <unistd.h>
 
-extern char *text_result_from_scan;
 // trim from start (in place)
 static inline void ltrim(std::string &s)
 {

@@ -27,8 +27,12 @@ protected:
     void get_screen_pixels();
 
 private:
+    const char *_TRAINED_DATA_PATH = "static/traineddata/";
+    std::string app_path;
+
     //display Pixbuf
-    Glib::RefPtr<Gdk::Pixbuf> pixels;
+    Glib::RefPtr<Gdk::Pixbuf>
+        pixels;
     Gdk::Rectangle rect;
 
     //Coordenadas para o mouse na tela

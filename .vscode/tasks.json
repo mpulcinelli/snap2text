@@ -2,64 +2,22 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "cmake",
       "type": "shell",
-      "label": "TSK - C/C++: g++ build project files",
-      "command": "/usr/bin/g++",
-      "args": [
-        "-std=c++2a",
-        "-lstdc++fs",
-        "-g",
-        "${workspaceFolder}/*.cc",
-        "-o",
-        "${workspaceFolder}/bin/snap2text",
-        "`pkg-config",
-        "--libs",
-        "--cflags",
-        "lept",
-        "tesseract",
-        "gtkmm-3.0",
-        "libcurl",
-        "curlpp",
-        "sqlite3",
-        "jsoncpp",
-        "gtk+-3.0`",
-        "-luuid"
-      ],
       "options": {
-        "cwd": "${workspaceFolder}"
+        "cwd": "${workspaceRoot}/build"
       },
-      "problemMatcher": [
-        "$gcc"
-      ]
-    },
-    {
-      "label": "TSK - Copy static folder to bin",
-      "type": "shell",
-      "command": "cp -R ${workspaceFolder}/static/ ${workspaceFolder}/bin/"
-    },
-    {
-      "label": "TSK - Copy config to bin folder",
-      "type": "shell",
-      "command": "cp ${workspaceFolder}/app_config.json ${workspaceFolder}/bin/"
-    },
-    {
-      "label": "TSK - Copy desktop shortcut to bin folder",
-      "type": "shell",
-      "command": "cp ${workspaceFolder}/snap2text.desktop ${workspaceFolder}/bin/"
-    },
-    {
-      "label": "TSK - Copy Tesseract traineddata to bin folder",
-      "type": "shell",
-      "command": "cp -R ${workspaceFolder}/traineddata/ ${workspaceFolder}/bin/"
-    },
-    {
-      "label": "TSK - Copy Static and Build Project",
-      "dependsOn": [
-        "TSK - Copy static folder to bin",
-        "TSK - Copy config to bin folder",
-        "TSK - Copy desktop shortcut to bin folder",
-        "TSK - Copy Tesseract traineddata to bin folder",
-        "TSK - C/C++: g++ build project files"
+      "command": "/usr/bin/cmake",
+      "args": [
+        "--build",
+        "${workspaceRoot}/build",
+        "--config",
+        "Debug",
+        "--target",
+        "all",
+        "--",
+        "-j",
+        "10"
       ],
       "group": {
         "kind": "build",

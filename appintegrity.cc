@@ -1,17 +1,17 @@
 #include "appintegrity.h"
 #include "globals.h"
 
-#include <sstream>
 #include <filesystem>
 #include <fstream>
+#include <json/json.h>
+#include <sstream>
+#include <string>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <string>
-#include <fstream>
-#include <json/json.h>
 
 AppIntegrity::AppIntegrity(/* args */)
 {
+    this->app_path = get_path_no_exe();
 }
 
 AppIntegrity::~AppIntegrity()
@@ -22,7 +22,7 @@ EAppIntegrityCheck AppIntegrity::CheckConfigFilesIntegrity()
 {
     bool exist = false;
 
-    exist = std::filesystem::exists("app_config.json");
+    exist = std::filesystem::exists(this->app_path + this->_APP_CONFIG);
 
     if (!exist)
         return EAppIntegrityCheck::AppConfigMissing;
@@ -34,14 +34,13 @@ EAppIntegrityCheck AppIntegrity::CheckConfigFilesIntegrity()
             return retval;
         }
     }
-    std::string exec_path = get_path_no_exe();
 
-    exist = std::filesystem::exists(exec_path + "static/style.css");
+    exist = std::filesystem::exists(this->app_path + this->_APP_STYLE_CSS);
 
     if (!exist)
         return EAppIntegrityCheck::AppStyleMissing;
 
-    exist = std::filesystem::exists(exec_path + "static/ui-window.glade");
+    exist = std::filesystem::exists(this->app_path + this->_APP_UI_GLADE);
 
     if (!exist)
         return EAppIntegrityCheck::AppUIWindowGladeMissing;
@@ -51,8 +50,7 @@ EAppIntegrityCheck AppIntegrity::CheckConfigFilesIntegrity()
 
 EAppIntegrityCheck AppIntegrity::CheckAppConfigContent()
 {
-    std::string exec_path = get_path_no_exe();
-    std::ifstream file_conf(exec_path + "app_config.json");
+    std::ifstream file_conf(this->app_path + this->_APP_CONFIG);
 
     if (file_conf.is_open())
     {

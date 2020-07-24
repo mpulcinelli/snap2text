@@ -14,8 +14,11 @@ DrawingAreaWindow::DrawingAreaWindow(int monitor, Glib::ustring language_ocr)
 {
     active_monitor = monitor;
     active_language_ocr = language_ocr;
+
     add_events(Gdk::BUTTON_PRESS_MASK);
     add_events(Gdk::POINTER_MOTION_MASK);
+
+    this->app_path = get_path_no_exe();
 
     firstclick = false;
     secondclick = false;
@@ -129,8 +132,10 @@ void DrawingAreaWindow::take_screen_shot()
 void DrawingAreaWindow::get_text_from_screen_shot()
 {
     tesseract::TessBaseAPI *ocr = new tesseract::TessBaseAPI();
+    std::string buff_intern(this->app_path);
+    buff_intern.append(this->_TRAINED_DATA_PATH);
 
-    const char *datapath = "./traineddata/";
+    const char *datapath = buff_intern.c_str();
 
     if (ocr->Init(datapath, active_language_ocr.c_str()))
     {

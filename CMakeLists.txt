@@ -56,8 +56,8 @@ ADD_DEFINITIONS(${UUID_CFLAGS_OTHER})
 add_executable(snap2text main.cc 
                 apihelper.cc 
                 apihelper.h 
-                appintegrity.cc 
                 appintegrity.h 
+                appintegrity.cc 
                 areacapturewindow.cc 
                 areacapturewindow.h
                 document.cc
@@ -100,3 +100,7 @@ TARGET_LINK_LIBRARIES(snap2text ${GTK3_LIBRARIES}
                                 ${JSONCPP_LIBRARIES}
                                 ${GTK3_LIBRARIES}
                                 ${UUID_LIBRARIES})
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                       ${CMAKE_SOURCE_DIR}/static $<TARGET_FILE_DIR:${PROJECT_NAME}>/static)
