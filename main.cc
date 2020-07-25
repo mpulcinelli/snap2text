@@ -552,19 +552,29 @@ void setup_components()
             m_refTreeModel_combo_documents = Gtk::ListStore::create(m_Columns_combobox_document);
             cbo_list_documents->set_model(m_refTreeModel_combo_documents);
 
-            // Gtk::TreeModel::Row cbo_doc_row = *(m_refTreeModel_combo_documents->append());
-            // cbo_doc_row[m_Columns_combobox_document.m_col_id] = 1;
-            // cbo_doc_row[m_Columns_combobox_document.m_col_name] = "Billy Bob";
-            // cbo_doc_row[m_Columns_combobox_document.m_col_extra] = "something";
-            // cbo_list_documents->set_active(cbo_doc_row);
+            unique_ptr<Document> doc = make_unique<Document>();
+
+            const auto &lst_docs = doc->listAllDocuments();
+
+            int idRow = 1;
+
+            for (auto &&i : lst_docs)
+            {
+                Gtk::TreeModel::Row cbo_doc_row = *(m_refTreeModel_combo_documents->append());
+                cbo_doc_row[m_Columns_combobox_document.m_col_id] = idRow;
+                cbo_doc_row[m_Columns_combobox_document.m_col_name] = i->Title;
+                cbo_doc_row[m_Columns_combobox_document.m_col_extra] = i->Description;
+                cbo_list_documents->set_active(cbo_doc_row);
+                idRow++;
+            }
 
             // cbo_doc_row = *(m_refTreeModel_combo_documents->append());
             // cbo_doc_row[m_Columns_combobox_document.m_col_id] = 2;
             // cbo_doc_row[m_Columns_combobox_document.m_col_name] = "teste Billy Bob";
             // cbo_doc_row[m_Columns_combobox_document.m_col_extra] = "teste something";
 
-            // cbo_list_documents->pack_start(m_Columns_combobox_document.m_col_id);
-            // cbo_list_documents->pack_start(m_Columns_combobox_document.m_col_name);
+            cbo_list_documents->pack_start(m_Columns_combobox_document.m_col_id);
+            cbo_list_documents->pack_start(m_Columns_combobox_document.m_col_name);
         }
 
         // Recupera a quantidade de monitores do usuário.

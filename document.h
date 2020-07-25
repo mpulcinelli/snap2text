@@ -36,7 +36,7 @@ private:
     void clearList();
     static int staticCallbackDocument(void *param, int argc, char **argv, char **azColName);
 
-    static std::vector<DocumentModel> listDocuments;
+    std::vector<std::unique_ptr<DocumentModel>> listDocuments;
 
 public:
     Document(/* args */);
@@ -47,6 +47,9 @@ public:
     bool editDocument(char *&id, std::string title, std::string description);
     bool hasDocument(std::string id);
     int getDocument(std::string id);
+
+    const std::vector<std::unique_ptr<DocumentModel>> &listAllDocuments() const;
+
     ///////////////////////////////////////////////////////////////////
 
     int addSession(char *idDocument, std::string content);

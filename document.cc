@@ -4,15 +4,13 @@
 #include <ctime>
 #include <fstream>
 #include <iostream>
-
 #include <sqlite3.h>
 #include <string.h>
 #include <string>
 #include <uuid/uuid.h>
+#include <vector>
 
 using namespace std;
-
-std::vector<DocumentModel> Document::listDocuments;
 
 Document::Document(/* args */)
 {
@@ -26,65 +24,29 @@ Document::~Document()
 
 int Document::staticCallbackDocument(void *param, int argc, char **argv, char **azColName)
 {
-    DocumentModel documentModel;
+    unique_ptr<DocumentModel> documentModel = make_unique<DocumentModel>();
 
     for (int i = 0; i < argc; i++)
     {
         cout << azColName[i] << ": " << argv[i] << endl;
         if (strcmp(azColName[i], "Id") == 0)
-            documentModel.Id = argv[i];
+            documentModel->Id = argv[i];
         else if (strcmp(azColName[i], "Title") == 0)
-            documentModel.Title = argv[i];
+            documentModel->Title = argv[i];
         else if (strcmp(azColName[i], "Description") == 0)
-            documentModel.Description = argv[i];
+            documentModel->Description = argv[i];
         else if (strcmp(azColName[i], "CreatedDate") == 0)
         {
             std::ifstream timeToStream(argv[i]);
             time_t t;
             timeToStream >> t;
-            documentModel.CreatedDate = t;
+            documentModel->CreatedDate = t;
         }
     }
 
     try
     {
-        Document::listDocuments.push_back(documentModel);
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << e.what() << '\n';
-    }
-
-    cout << endl;
-
-    return 0;
-}
-
-int Document::callbackDocument(int argc, char **argv, char **azColName)
-{
-    DocumentModel documentModel;
-
-    for (int i = 0; i < argc; i++)
-    {
-        cout << azColName[i] << ": " << argv[i] << endl;
-        if (strcmp(azColName[i], "Id") == 0)
-            documentModel.Id = argv[i];
-        else if (strcmp(azColName[i], "Title") == 0)
-            documentModel.Title = argv[i];
-        else if (strcmp(azColName[i], "Description") == 0)
-            documentModel.Description = argv[i];
-        else if (strcmp(azColName[i], "CreatedDate") == 0)
-        {
-            std::ifstream timeToStream(argv[i]);
-            time_t t;
-            timeToStream >> t;
-            documentModel.CreatedDate = t;
-        }
-    }
-
-    try
-    {
-        Document::listDocuments.push_back(documentModel);
+        // Document::listDocuments.push_back(documentModel);
     }
     catch (const std::exception &e)
     {
@@ -104,45 +66,54 @@ int Document::getDocument(std::string id)
 
 bool Document::hasDocument(std::string id)
 {
-    sqlite3 *db;
-    char *zErrMsg = 0;
-    int exit = 0;
+    return 0;
+}
 
-    clearList();
+const std::vector<std::unique_ptr<DocumentModel>> &Document::listAllDocuments() const
+{
+    sqlite3 *handle = nullptr;
+    int retval = sqlite3_open(db_path.c_str(), &handle);
 
-    exit = sqlite3_open(db_path.c_str(), &db);
-
-    if (!exit)
+    if (retval != SQLITE_OK)
     {
-
-        std::string sql_raw = "SELECT * FROM tb_document where Id = '{@v0}';";
-
-        findAndReplaceAll(sql_raw, "{@v0}", id);
-        const char *sql_final = sql_raw.c_str();
-
-        auto rc = sqlite3_exec(db, sql_final, staticCallbackDocument, 0, &zErrMsg);
-
-        if (rc != SQLITE_OK)
-        {
-            cout << "Record NOT inserted!" << endl;
-            cout << zErrMsg << endl;
-
-            sqlite3_free(zErrMsg);
-        }
-        else
-        {
-            cout << zErrMsg << endl;
-            cout << "Record inserted!" << endl;
-        }
-    }
-    else
-    {
-        cout << "DB Open Error: " << sqlite3_errmsg(db) << endl;
+        cerr << "open: " << sqlite3_errstr(retval) << '\n';
+        return this->listDocuments;
     }
 
-    sqlite3_close(db);
+    string zSql("SELECT * FROM tb_document;");
 
-    return Document::listDocuments.size() > 0;
+    const char *zTail = nullptr;
+    const char **pzTail = &zTail;
+    sqlite3_stmt *statement = nullptr;
+
+    retval = sqlite3_prepare_v2(handle, zSql.c_str(), -1, &statement, pzTail);
+
+    if (retval != SQLITE_OK)
+    {
+        cerr << "prepare: " << sqlite3_errstr(retval) << '\n';
+        return this->listDocuments;
+    }
+
+    const int num_columns = sqlite3_column_count(statement);
+
+    do
+    {
+        retval = sqlite3_step(statement);
+        if (retval == SQLITE_ROW)
+        {
+            // There is another row after this one: read this row
+            // for now
+            for (int i = 0; i < num_columns; ++i)
+            {
+                const unsigned char *row_element = sqlite3_column_text(statement, i);
+                cout << row_element << ' ';
+            }
+            cout << '\n';
+        }
+
+    } while (retval == SQLITE_DONE);
+
+    return this->listDocuments;
 }
 
 int Document::createDocument(std::string title, std::string description, char *&id_to_insert)
@@ -275,7 +246,7 @@ bool Document::editSession(char *&id, std::string content)
 
 void Document::clearList()
 {
-    std::vector<DocumentModel>::iterator it = Document::listDocuments.begin();
+    std::vector<std::unique_ptr<DocumentModel>>::iterator it = Document::listDocuments.begin();
 
     while (it != Document::listDocuments.end())
     {
