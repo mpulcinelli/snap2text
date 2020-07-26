@@ -11,6 +11,14 @@ struct DocumentModel
     std::string Description;
     std::time_t CreatedDate;
 };
+
+struct SessionModel
+{
+    std::string Id;
+    std::string IdDocument;
+    std::string Content;
+};
+
 class DocumentCombobox : public Gtk::TreeModel::ColumnRecord
 {
 private:
@@ -32,14 +40,10 @@ class Document
 {
 private:
     /* data */
-    std::string db_path;
-    void clearList();
-    static int staticCallbackDocument(void *param, int argc, char **argv, char **azColName);
-
-    std::vector<std::unique_ptr<DocumentModel>> listDocuments;
+    std::string _db_path;
 
 public:
-    Document(/* args */);
+    Document(std::string db_path);
     ~Document();
 
     int createDocument(std::string title, std::string description, char *&id_to_insert);
@@ -48,7 +52,7 @@ public:
     bool hasDocument(std::string id);
     int getDocument(std::string id);
 
-    const std::vector<std::unique_ptr<DocumentModel>> &listAllDocuments() const;
+    std::vector<std::unique_ptr<DocumentModel>> listAllDocuments();
 
     ///////////////////////////////////////////////////////////////////
 
@@ -56,5 +60,6 @@ public:
     bool deleteSession(char *&id);
     bool deleteAllSession(char *&idDocument);
     bool editSession(char *&id, std::string content);
+    std::unique_ptr<SessionModel> getSession(std::string idDocument);
     int callbackDocument(int argc, char **argv, char **azColName);
 };

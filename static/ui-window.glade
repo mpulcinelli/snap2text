@@ -495,8 +495,10 @@
                     </child>
                     <child>
                       <object class="GtkComboBox" id="cbo_list_documents">
+                        <property name="name">cbo_list_documents</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <signal name="changed" handler="on_cbo_list_documents_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>

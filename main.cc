@@ -38,6 +38,10 @@ Gtk::Window *menu_window = nullptr;
 Gtk::ComboBoxText *cbo_lista_monitores;
 Gtk::ComboBoxText *cbo_avail_lang_to_translate;
 Gtk::ComboBoxText *cbo_languages_captura;
+
+Gtk::Entry *txt_new_document_name;
+Gtk::TextView *txt_new_document_description;
+
 GridModel m_Columns;
 Glib::RefPtr<Gtk::ListStore> m_refTreeModelGrid;
 
@@ -92,6 +96,38 @@ static bool on_mnu_item_quit_clicked(GdkEventButton *button_event)
     return false;
 }
 
+static void on_cbo_list_documents_changed()
+{
+    if (cbo_list_documents)
+    {
+        DocumentCombobox m_Columns_combobox_document;
+
+        Gtk::TreeModel::iterator iter = cbo_list_documents->get_active();
+        if (iter)
+        {
+            // TODO: Modificar essa rotina.
+            unique_ptr<Document> doc = make_unique<Document>(app_path + "static/data/db_snap2text.db");
+
+            Gtk::TreeModel::Row row = *iter;
+            int id = row[m_Columns_combobox_document.m_col_id];
+            Glib::ustring idDoc = row[m_Columns_combobox_document.m_col_extra];
+            Glib::ustring Description = row[m_Columns_combobox_document.m_col_name];
+            auto sessionDoc = doc->getSession(idDoc);
+            if (sessionDoc)
+            {
+                if (txt_new_document_name)
+                {
+                    txt_new_document_name->set_text("");
+                }
+                if (txt_new_document_description)
+                {
+                    txt_new_document_description->get_buffer()->set_text("");
+                }
+            }
+        }
+    }
+}
+
 static void on_tool_bar_item_add_to_compose_button_press_event()
 {
     typedef Gtk::TreeModel::Children type_children;
@@ -140,13 +176,13 @@ static void on_tool_bar_item_add_to_compose_button_press_event()
 }
 static void on_tool_bar_item_add_new_document_clicked()
 {
-    Gtk::Entry *txt_new_document_name;
+
     builder->get_widget("txt_new_document_name", txt_new_document_name);
     if (txt_new_document_name)
     {
         txt_new_document_name->get_buffer()->set_text("");
     }
-    Gtk::TextView *txt_new_document_description;
+
     builder->get_widget("txt_new_document_description", txt_new_document_description);
     if (txt_new_document_description)
     {
@@ -165,13 +201,9 @@ static void on_tool_bar_item_add_new_document_clicked()
 static void on_tool_bar_item_save_document_clicked()
 {
     char *id_to_insert;
+    std::unique_ptr<Document> dcmt = make_unique<Document>(app_path + "static/data/db_snap2text.db");
 
-    Document d;
-    bool hd = d.hasDocument("29ca549a-5073-449a-a731-c39a0096a321");
-
-    //d.createDocument("A NOVA ORDEM", "A NOVA ORDEM MUNDIAL E OS TEMPLÁRIOS.", id_to_insert);
-
-    // verificar se existe o
+    bool hd = dcmt->hasDocument("29ca549a-5073-449a-a731-c39a0096a321");
 }
 
 static void on_tool_bar_item_new_clicked()
@@ -543,16 +575,16 @@ void setup_components()
             }
         }
 
-        Gtk::ComboBox *cbo_list_documents;
         builder->get_widget("cbo_list_documents", cbo_list_documents);
         if (cbo_list_documents)
         {
             DocumentCombobox m_Columns_combobox_document;
-
+            //
+            cbo_list_documents->signal_changed().connect(sigc::ptr_fun(&on_cbo_list_documents_changed));
             m_refTreeModel_combo_documents = Gtk::ListStore::create(m_Columns_combobox_document);
             cbo_list_documents->set_model(m_refTreeModel_combo_documents);
 
-            unique_ptr<Document> doc = make_unique<Document>();
+            unique_ptr<Document> doc = make_unique<Document>(app_path + "static/data/db_snap2text.db");
 
             const auto &lst_docs = doc->listAllDocuments();
 
@@ -563,15 +595,10 @@ void setup_components()
                 Gtk::TreeModel::Row cbo_doc_row = *(m_refTreeModel_combo_documents->append());
                 cbo_doc_row[m_Columns_combobox_document.m_col_id] = idRow;
                 cbo_doc_row[m_Columns_combobox_document.m_col_name] = i->Title;
-                cbo_doc_row[m_Columns_combobox_document.m_col_extra] = i->Description;
+                cbo_doc_row[m_Columns_combobox_document.m_col_extra] = i->Id;
                 cbo_list_documents->set_active(cbo_doc_row);
                 idRow++;
             }
-
-            // cbo_doc_row = *(m_refTreeModel_combo_documents->append());
-            // cbo_doc_row[m_Columns_combobox_document.m_col_id] = 2;
-            // cbo_doc_row[m_Columns_combobox_document.m_col_name] = "teste Billy Bob";
-            // cbo_doc_row[m_Columns_combobox_document.m_col_extra] = "teste something";
 
             cbo_list_documents->pack_start(m_Columns_combobox_document.m_col_id);
             cbo_list_documents->pack_start(m_Columns_combobox_document.m_col_name);

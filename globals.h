@@ -1,9 +1,16 @@
 #include <algorithm>
 #include <cctype>
+#include <functional>
 #include <limits.h>
 #include <locale>
+#include <sstream>
 #include <string>
 #include <unistd.h>
+
+const inline std::size_t _ID = 15669471125426487840UL;
+const inline std::size_t _TITLE = 2085137023996725595UL;
+const inline std::size_t _DESCRIPTION = 3086331403157438677UL;
+const inline std::size_t _CREATEDDATE = 12442762642115171650UL;
 
 // trim from start (in place)
 static inline void ltrim(std::string &s)
@@ -71,4 +78,11 @@ static inline void findAndReplaceAll(std::string &data, std::string toSearch, st
         data.replace(pos, toSearch.size(), replaceStr);
         pos = data.find(toSearch, pos + replaceStr.size());
     }
+}
+
+static inline unsigned long converttoASCII(std::string s)
+{
+    std::hash<std::string> strHash;
+    unsigned long ret = strHash(s);
+    return ret;
 }

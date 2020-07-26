@@ -12,50 +12,15 @@
 
 using namespace std;
 
-Document::Document(/* args */)
+Document::Document(std::string db_path)
 {
     // TODO: Modificar para config.
-    db_path = "/home/mpulcinelli/Develop/personal/snap2text/static/data/db_snap2text.db";
+    _db_path = db_path;
+    // "/home/mpulcinelli/Develop/personal/snap2text/static/data/db_snap2text.db";
 }
 
 Document::~Document()
 {
-}
-
-int Document::staticCallbackDocument(void *param, int argc, char **argv, char **azColName)
-{
-    unique_ptr<DocumentModel> documentModel = make_unique<DocumentModel>();
-
-    for (int i = 0; i < argc; i++)
-    {
-        cout << azColName[i] << ": " << argv[i] << endl;
-        if (strcmp(azColName[i], "Id") == 0)
-            documentModel->Id = argv[i];
-        else if (strcmp(azColName[i], "Title") == 0)
-            documentModel->Title = argv[i];
-        else if (strcmp(azColName[i], "Description") == 0)
-            documentModel->Description = argv[i];
-        else if (strcmp(azColName[i], "CreatedDate") == 0)
-        {
-            std::ifstream timeToStream(argv[i]);
-            time_t t;
-            timeToStream >> t;
-            documentModel->CreatedDate = t;
-        }
-    }
-
-    try
-    {
-        // Document::listDocuments.push_back(documentModel);
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << e.what() << '\n';
-    }
-
-    cout << endl;
-
-    return 0;
 }
 
 int Document::getDocument(std::string id)
@@ -69,51 +34,64 @@ bool Document::hasDocument(std::string id)
     return 0;
 }
 
-const std::vector<std::unique_ptr<DocumentModel>> &Document::listAllDocuments() const
+std::vector<std::unique_ptr<DocumentModel>> Document::listAllDocuments()
 {
-    sqlite3 *handle = nullptr;
-    int retval = sqlite3_open(db_path.c_str(), &handle);
+    sqlite3 *db = nullptr;
+    sqlite3_stmt *statement = nullptr;
+
+    std::vector<std::unique_ptr<DocumentModel>> listDocumentsPtr;
+
+    int retval = sqlite3_open(_db_path.c_str(), &db);
 
     if (retval != SQLITE_OK)
     {
         cerr << "open: " << sqlite3_errstr(retval) << '\n';
-        return this->listDocuments;
+        return listDocumentsPtr;
     }
 
     string zSql("SELECT * FROM tb_document;");
 
-    const char *zTail = nullptr;
-    const char **pzTail = &zTail;
-    sqlite3_stmt *statement = nullptr;
+    sqlite3_prepare_v2(db, zSql.c_str(), -1, &statement, nullptr);
 
-    retval = sqlite3_prepare_v2(handle, zSql.c_str(), -1, &statement, pzTail);
+    const int num_cols = sqlite3_column_count(statement);
+    int i = 0;
 
-    if (retval != SQLITE_OK)
+    while (sqlite3_step(statement) != SQLITE_DONE)
     {
-        cerr << "prepare: " << sqlite3_errstr(retval) << '\n';
-        return this->listDocuments;
-    }
+        unique_ptr<DocumentModel> documentModel = make_unique<DocumentModel>();
 
-    const int num_columns = sqlite3_column_count(statement);
-
-    do
-    {
-        retval = sqlite3_step(statement);
-        if (retval == SQLITE_ROW)
+        for (i = 0; i < num_cols; i++)
         {
-            // There is another row after this one: read this row
-            // for now
-            for (int i = 0; i < num_columns; ++i)
+            auto col_name = sqlite3_column_name(statement, i);
+            auto col_name_ascii = converttoASCII(col_name);
+            cout << col_name << " : " << col_name_ascii << endl;
+
+            switch (col_name_ascii)
             {
-                const unsigned char *row_element = sqlite3_column_text(statement, i);
-                cout << row_element << ' ';
+            case _ID:
+                documentModel->Id = std::string(reinterpret_cast<const char *>(sqlite3_column_text(statement, i)));
+                break;
+            case _TITLE:
+                documentModel->Title = std::string(reinterpret_cast<const char *>(sqlite3_column_text(statement, i)));
+                break;
+            case _DESCRIPTION:
+                documentModel->Description = std::string(reinterpret_cast<const char *>(sqlite3_column_text(statement, i)));
+                break;
+            case _CREATEDDATE:
+                documentModel->CreatedDate = sqlite3_column_int(statement, i);
+                break;
+            default:
+                break;
             }
-            cout << '\n';
         }
 
-    } while (retval == SQLITE_DONE);
+        listDocumentsPtr.push_back(std::move(documentModel));
+    }
 
-    return this->listDocuments;
+    sqlite3_finalize(statement);
+    sqlite3_close(db);
+
+    return listDocumentsPtr;
 }
 
 int Document::createDocument(std::string title, std::string description, char *&id_to_insert)
@@ -122,9 +100,7 @@ int Document::createDocument(std::string title, std::string description, char *&
     char *zErrMsg = 0;
     int exit = 0;
 
-    std::string exec_path = db_path;
-
-    exit = sqlite3_open(exec_path.c_str(), &db);
+    exit = sqlite3_open(_db_path.c_str(), &db);
 
     if (!exit)
     {
@@ -144,7 +120,7 @@ int Document::createDocument(std::string title, std::string description, char *&
 
         const char *sql_final = sql_raw.c_str();
 
-        auto rc = sqlite3_exec(db, sql_final, staticCallbackDocument, 0, &zErrMsg);
+        auto rc = sqlite3_exec(db, sql_final, NULL, 0, &zErrMsg);
 
         if (rc != SQLITE_OK)
         {
@@ -178,6 +154,61 @@ bool Document::editDocument(char *&id, std::string title, std::string descriptio
     return false;
 }
 
+std::unique_ptr<SessionModel> Document::getSession(std::string idDocument)
+{
+    sqlite3 *db = nullptr;
+    sqlite3_stmt *statement = nullptr;
+
+    int retval = sqlite3_open(_db_path.c_str(), &db);
+
+    if (retval != SQLITE_OK)
+    {
+        cerr << "open: " << sqlite3_errstr(retval) << '\n';
+        return nullptr;
+    }
+
+    string sql_raw("SELECT Id, Content FROM tb_session where IdDocument = '{@v0}'");
+
+    findAndReplaceAll(sql_raw, "{@v0}", idDocument);
+
+    sqlite3_prepare_v2(db, sql_raw.c_str(), -1, &statement, nullptr);
+
+    const int num_cols = sqlite3_column_count(statement);
+    int i = 0;
+
+    unique_ptr<SessionModel> sessionModel = make_unique<SessionModel>();
+
+    while (sqlite3_step(statement) != SQLITE_DONE)
+    {
+        for (i = 0; i < num_cols; i++)
+        {
+            auto col_name = sqlite3_column_name(statement, i);
+            auto col_name_ascii = converttoASCII(col_name);
+            cout << col_name << " : " << col_name_ascii << endl;
+
+            switch (col_name_ascii)
+            {
+            case _ID:
+                sessionModel->Id = std::string(reinterpret_cast<const char *>(sqlite3_column_text(statement, i)));
+                break;
+            case _TITLE:
+                sessionModel->IdDocument = std::string(reinterpret_cast<const char *>(sqlite3_column_text(statement, i)));
+                break;
+            case _DESCRIPTION:
+                sessionModel->Content = std::string(reinterpret_cast<const char *>(sqlite3_column_text(statement, i)));
+                break;
+            default:
+                break;
+            }
+        }
+    }
+
+    sqlite3_finalize(statement);
+    sqlite3_close(db);
+
+    return std::move(sessionModel);
+}
+
 int Document::addSession(char *idDocument, std::string content)
 {
 
@@ -185,9 +216,7 @@ int Document::addSession(char *idDocument, std::string content)
     char *zErrMsg = 0;
     int exit = 0;
 
-    std::string exec_path = db_path;
-
-    exit = sqlite3_open(exec_path.c_str(), &db);
+    exit = sqlite3_open(_db_path.c_str(), &db);
 
     if (!exit)
     {
@@ -206,7 +235,7 @@ int Document::addSession(char *idDocument, std::string content)
 
         const char *sql_final = sql_raw.c_str();
 
-        auto rc = sqlite3_exec(db, sql_final, staticCallbackDocument, 0, &zErrMsg);
+        auto rc = sqlite3_exec(db, sql_final, NULL, 0, &zErrMsg);
 
         if (rc != SQLITE_OK)
         {
@@ -242,14 +271,4 @@ bool Document::deleteAllSession(char *&idDocument)
 bool Document::editSession(char *&id, std::string content)
 {
     return false;
-}
-
-void Document::clearList()
-{
-    std::vector<std::unique_ptr<DocumentModel>>::iterator it = Document::listDocuments.begin();
-
-    while (it != Document::listDocuments.end())
-    {
-        Document::listDocuments.erase(it++);
-    }
 }
