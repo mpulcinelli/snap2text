@@ -2,9 +2,11 @@ cmake_minimum_required(VERSION 3.0.0)
 project(snap2text VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 20)
-set(SW_BUILD_SHARED_LIBS 1)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_BUILD_TYPE debug)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -lstdc++fs -luuid -rdynamic")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++2a -lstdc++fs -luuid -rdynamic")
+set(SW_BUILD_SHARED_LIBS 1)
 
 find_package(PkgConfig REQUIRED)
 
