@@ -8,10 +8,10 @@
       "name": "g++ - Build and debug active file",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/snap2text",
+      "program": "${workspaceFolder}/build/snap2text",
       "args": [],
       "stopAtEntry": true,
-      "cwd": "${workspaceFolder}/bin",
+      "cwd": "${workspaceFolder}/build",
       "environment": [],
       "externalConsole": false,
       "MIMode": "gdb",
@@ -32,7 +32,6 @@
           "ignoreFailures": true
         }
       ],
-      "preLaunchTask": "TSK - Copy Static and Build Project",
       "miDebuggerPath": "/usr/bin/gdb",
       "logging": {
         "engineLogging": true,

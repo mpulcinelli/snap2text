@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.8.0)
 project(snap2text VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -7,6 +7,9 @@ set(CMAKE_BUILD_TYPE debug)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -lstdc++fs -luuid -rdynamic")
 
 set(SW_BUILD_SHARED_LIBS 1)
+
+include(CTest)
+enable_testing()
 
 find_package(PkgConfig REQUIRED)
 
@@ -89,7 +92,6 @@ target_include_directories(snap2text PUBLIC ${GTK3_INCLUDE_DIRS}
                                 ${CURLPP_INCLUDE_DIRS}
                                 ${SQLITE3_INCLUDE_DIRS}
                                 ${JSONCPP_INCLUDE_DIRS}
-                                ${GTK3_INCLUDE_DIRS}
                                 ${UUID_INCLUDE_DIRS})
 
 TARGET_LINK_LIBRARIES(snap2text ${GTK3_LIBRARIES} 
@@ -100,8 +102,8 @@ TARGET_LINK_LIBRARIES(snap2text ${GTK3_LIBRARIES}
                                 ${CURLPP_LIBRARIES}
                                 ${SQLITE3_LIBRARIES}
                                 ${JSONCPP_LIBRARIES}
-                                ${GTK3_LIBRARIES}
                                 ${UUID_LIBRARIES})
+
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
