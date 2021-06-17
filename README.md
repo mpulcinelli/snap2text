@@ -1,6 +1,6 @@
 # Application Snap2texT
 
-This project aims be an application to take screenshots from images (containing text), convert them to pure text and translate the text to other languages.
+This project aims create an application that takes screenshots from desktop areas and convert them to pure text and translate the text to other languages.
 
 ## Choose the text you need to capture.
 
